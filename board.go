@@ -1,7 +1,30 @@
 package sudoku
 
+import (
+	"math/rand"
+	"time"
+)
+
 // Board is representing sudoku board
 type Board [9][9]int
+
+// NewBoard returns a new unsolved board
+func NewBoard(difficulty byte) Board {
+	firstRow := shuffleRow([9]int{1, 2, 3, 4, 5, 6, 7, 8, 9})
+
+	// Use SolveBoard function to get a complete valid board
+	board, _ := SolveBoard(Board{firstRow})
+
+	for difficulty > 0 {
+		column, row := getRandowCell()
+		if !isEmptyCell(*board, column, row) {
+			board[row][column] = 0
+			difficulty--
+		}
+	}
+
+	return *board
+}
 
 // ColumnHasNumber checks if the column has same number
 func (board *Board) ColumnHasNumber(column, number int) bool {
@@ -67,4 +90,23 @@ func getBoxSlice(board Board, boxColumn, boxRow int) [][]int {
 
 func getBoxCoordinate(column, row int) (int, int) {
 	return (column / 3), (row / 3)
+}
+
+func shuffleRow(row [9]int) [9]int {
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(9, func(i, j int) {
+		row[i], row[j] = row[j], row[i]
+	})
+
+	return row
+}
+
+func getRandowCell() (int, int) {
+	rand.Seed(time.Now().UnixNano())
+
+	return rand.Intn(9), rand.Intn(9)
+}
+
+func isEmptyCell(board Board, column, row int) bool {
+	return board[row][column] == 0
 }
