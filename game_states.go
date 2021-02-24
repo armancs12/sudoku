@@ -24,25 +24,25 @@ type State interface {
 
 // PlayState is the state of gameplay
 type PlayState struct {
-	game       IGame
-	posX, posY int
+	Game       IGame
+	PosX, PosY int
 }
 
 // NewPlayState returns a new PlayState
 func NewPlayState(game IGame) *PlayState {
 	return &PlayState{
-		game: game,
+		Game: game,
 		// center of the board
-		posX: 4,
-		posY: 4,
+		PosX: 4,
+		PosY: 4,
 	}
 }
 
 // OnResize checks if size is big enough
 func (ps *PlayState) OnResize(event *tcell.EventResize) {
 	width, height := event.Size()
-	if width < ps.game.MinWidth() || height < ps.game.MinHeight() {
-		ps.game.PushState(NewSmallSizeState(ps.game, width, height))
+	if width < ps.Game.MinWidth() || height < ps.Game.MinHeight() {
+		ps.Game.PushState(NewSmallSizeState(ps.Game, width, height))
 	}
 }
 
@@ -51,26 +51,26 @@ func (ps *PlayState) OnKeyPress(event *tcell.EventKey) {
 	key := event.Key()
 
 	if key == tcell.KeyESC {
-		ps.game.PushState(NewMenuState(ps.game))
+		ps.Game.PushState(NewMenuState(ps.Game))
 		return
 	}
 
-	if key == tcell.KeyUp && ps.posY > 0 {
-		ps.posY--
-	} else if key == tcell.KeyDown && ps.posY < 8 {
-		ps.posY++
-	} else if key == tcell.KeyLeft && ps.posX > 0 {
-		ps.posX--
-	} else if key == tcell.KeyRight && ps.posX < 8 {
-		ps.posX++
+	if key == tcell.KeyUp && ps.PosY > 0 {
+		ps.PosY--
+	} else if key == tcell.KeyDown && ps.PosY < 8 {
+		ps.PosY++
+	} else if key == tcell.KeyLeft && ps.PosX > 0 {
+		ps.PosX--
+	} else if key == tcell.KeyRight && ps.PosX < 8 {
+		ps.PosX++
 	} else {
 		char := event.Rune()
 		if char == 'e' || char == 'E' {
-			ps.game.Board()[ps.posY][ps.posX] = 0
+			ps.Game.Board()[ps.PosY][ps.PosX] = 0
 		} else {
 			num := int(char - '0')
 			if num > 0 && num < 10 {
-				ps.game.Board()[ps.posY][ps.posX] = num
+				ps.Game.Board()[ps.PosY][ps.PosX] = num
 			}
 		}
 	}
@@ -79,9 +79,9 @@ func (ps *PlayState) OnKeyPress(event *tcell.EventKey) {
 // Draw draws the board
 func (ps *PlayState) Draw() {
 	ui.DrawCenter(&ui.BoardWidget{
-		Board:       *ps.game.Board(),
-		CursorX:     ps.posX,
-		CursorY:     ps.posY,
+		Board:       *ps.Game.Board(),
+		CursorX:     ps.PosX,
+		CursorY:     ps.PosY,
 		CursorColor: tcell.ColorRed,
 		NumberColor: tcell.ColorBlack,
 		BorderColor: tcell.ColorBlack,
@@ -91,24 +91,23 @@ func (ps *PlayState) Draw() {
 
 // MenuState is the state of game menu
 type MenuState struct {
-	game      IGame
-	pos       int
-	options   []string
-	functions []func()
+	Game      IGame
+	Pos       int
+	Options   []string
+	Functions []func()
 }
 
 // NewMenuState returns a new MenuState
 func NewMenuState(game IGame) *MenuState {
-
 	return &MenuState{
-		game: game,
-		pos:  0,
-		options: []string{
+		Game: game,
+		Pos:  0,
+		Options: []string{
 			"Resume",
 			"New Game",
 			"Exit",
 		},
-		functions: []func(){
+		Functions: []func(){
 			func() {
 				game.PopState()
 			},
@@ -127,8 +126,8 @@ func NewMenuState(game IGame) *MenuState {
 // OnResize checks if size is big enough
 func (ms *MenuState) OnResize(event *tcell.EventResize) {
 	width, height := event.Size()
-	if width < ms.game.MinWidth() || height < ms.game.MinHeight() {
-		ms.game.PushState(NewSmallSizeState(ms.game, width, height))
+	if width < ms.Game.MinWidth() || height < ms.Game.MinHeight() {
+		ms.Game.PushState(NewSmallSizeState(ms.Game, width, height))
 	}
 }
 
@@ -136,16 +135,16 @@ func (ms *MenuState) OnResize(event *tcell.EventResize) {
 func (ms *MenuState) OnKeyPress(event *tcell.EventKey) {
 	key := event.Key()
 	if key == tcell.KeyESC {
-		ms.game.PopState()
+		ms.Game.PopState()
 		return
 	}
 
 	if key == tcell.KeyUp {
-		ms.pos = (len(ms.options) + ms.pos - 1) % len(ms.options)
+		ms.Pos = (len(ms.Options) + ms.Pos - 1) % len(ms.Options)
 	} else if key == tcell.KeyDown {
-		ms.pos = (ms.pos + 1) % len(ms.options)
+		ms.Pos = (ms.Pos + 1) % len(ms.Options)
 	} else if key == tcell.KeyEnter {
-		ms.functions[ms.pos]()
+		ms.Functions[ms.Pos]()
 	}
 }
 
@@ -153,8 +152,8 @@ func (ms *MenuState) OnKeyPress(event *tcell.EventKey) {
 func (ms *MenuState) Draw() {
 	ui.DrawCenter(&ui.BoxWidget{
 		Child: &ui.MenuWidget{
-			Options:          ms.options,
-			CursorIndex:      ms.pos,
+			Options:          ms.Options,
+			CursorIndex:      ms.Pos,
 			AlignCenter:      true,
 			Color:            tcell.ColorWhite,
 			Background:       tcell.ColorRed,
@@ -173,9 +172,9 @@ func (ms *MenuState) Draw() {
 // SmallSizeState is the state of terminal size not being big enough
 // At this state, game will draw an error message
 type SmallSizeState struct {
-	game   IGame
-	width  int
-	height int
+	Game   IGame
+	Width  int
+	Height int
 }
 
 // NewSmallSizeState returns a new SmallSizeState
@@ -186,10 +185,10 @@ func NewSmallSizeState(game IGame, width, height int) *SmallSizeState {
 // OnResize checks if size is big enough
 func (sss *SmallSizeState) OnResize(event *tcell.EventResize) {
 	width, height := event.Size()
-	if width >= sss.game.MinWidth() && height >= sss.game.MinHeight() {
-		sss.game.PopState()
+	if width >= sss.Game.MinWidth() && height >= sss.Game.MinHeight() {
+		sss.Game.PopState()
 	} else {
-		sss.width, sss.height = width, height
+		sss.Width, sss.Height = width, height
 	}
 }
 
@@ -199,8 +198,8 @@ func (sss *SmallSizeState) OnKeyPress(event *tcell.EventKey) {}
 // Draw draws the error message
 func (sss *SmallSizeState) Draw() {
 	message := fmt.Sprintf("Please resize to\n at least %dx%d",
-		sss.game.MinWidth(), sss.game.MinHeight())
-	current := fmt.Sprintf("%dx%d", sss.width, sss.height)
+		sss.Game.MinWidth(), sss.Game.MinHeight())
+	current := fmt.Sprintf("%dx%d", sss.Width, sss.Height)
 
 	ui.DrawUpRightCorner(&ui.TextWidget{String: current})
 	ui.DrawCenter(&ui.BoxWidget{
