@@ -1,4 +1,4 @@
-package sudoku
+package board
 
 import (
 	"math/rand"

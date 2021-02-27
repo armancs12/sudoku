@@ -1,9 +1,10 @@
-package sudoku
+package main
 
 import (
 	"os"
 
 	"github.com/gdamore/tcell/v2"
+	"github.com/serhatscode/sudoku/board"
 	"github.com/serhatscode/sudoku/ui"
 )
 
@@ -12,8 +13,8 @@ type IGame interface {
 	Start() error
 	Exit()
 
-	Board() *Board
-	SetBoard(board *Board)
+	Board() *board.Board
+	SetBoard(board *board.Board)
 
 	MinWidth() int
 	MinHeight() int
@@ -25,7 +26,7 @@ type IGame interface {
 
 // Game ...
 type Game struct {
-	board  Board
+	board  board.Board
 	state  StateManager
 	screen tcell.Screen
 
@@ -40,7 +41,7 @@ func NewGame() (IGame, error) {
 	}
 
 	game := &Game{
-		board:     NewBoard(40),
+		board:     board.NewBoard(40),
 		screen:    screen,
 		minWidth:  ui.BoardWidth,
 		minHeight: ui.BoardHeight,
@@ -81,12 +82,12 @@ func (game *Game) Exit() {
 }
 
 // Board returns the sudoku board
-func (game *Game) Board() *Board {
+func (game *Game) Board() *board.Board {
 	return &game.board
 }
 
 // SetBoard sets the sudoku board
-func (game *Game) SetBoard(board *Board) {
+func (game *Game) SetBoard(board *board.Board) {
 	game.board = *board
 }
 

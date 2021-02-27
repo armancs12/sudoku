@@ -1,18 +1,18 @@
-package sudoku_test
+package board_test
 
 import (
 	"testing"
 
-	"github.com/serhatscode/sudoku"
+	"github.com/serhatscode/sudoku/board"
 )
 
 func TestSolveBoard(t *testing.T) {
 	solvables := []struct {
-		board         sudoku.Board
-		expectedBoard sudoku.Board
+		board         board.Board
+		expectedBoard board.Board
 	}{
 		{
-			board: sudoku.Board{
+			board: board.Board{
 				{0, 2, 0, 0, 9, 0, 5, 8, 0},
 				{7, 5, 0, 8, 4, 0, 9, 3, 2},
 				{8, 0, 9, 1, 2, 0, 0, 4, 0},
@@ -23,7 +23,7 @@ func TestSolveBoard(t *testing.T) {
 				{2, 1, 8, 5, 0, 9, 0, 0, 4},
 				{3, 4, 0, 0, 0, 8, 7, 2, 0},
 			},
-			expectedBoard: sudoku.Board{
+			expectedBoard: board.Board{
 				{6, 2, 4, 7, 9, 3, 5, 8, 1},
 				{7, 5, 1, 8, 4, 6, 9, 3, 2},
 				{8, 3, 9, 1, 2, 5, 6, 4, 7},
@@ -36,7 +36,7 @@ func TestSolveBoard(t *testing.T) {
 			},
 		},
 		{
-			board: sudoku.Board{
+			board: board.Board{
 				{9, 0, 7, 0, 0, 4, 0, 0, 5},
 				{5, 0, 0, 0, 0, 9, 0, 8, 0},
 				{2, 4, 8, 6, 3, 0, 0, 7, 0},
@@ -47,7 +47,7 @@ func TestSolveBoard(t *testing.T) {
 				{0, 0, 0, 0, 4, 7, 0, 5, 6},
 				{0, 0, 0, 2, 0, 6, 7, 4, 9},
 			},
-			expectedBoard: sudoku.Board{
+			expectedBoard: board.Board{
 				{9, 3, 7, 8, 1, 4, 2, 6, 5},
 				{5, 6, 1, 7, 2, 9, 3, 8, 4},
 				{2, 4, 8, 6, 3, 5, 9, 7, 1},
@@ -60,7 +60,7 @@ func TestSolveBoard(t *testing.T) {
 			},
 		},
 		{
-			board: sudoku.Board{
+			board: board.Board{
 				{0, 0, 0, 0, 0, 0, 0, 0, 0},
 				{0, 0, 4, 0, 5, 0, 1, 0, 0},
 				{8, 3, 6, 0, 0, 0, 0, 4, 2},
@@ -71,7 +71,7 @@ func TestSolveBoard(t *testing.T) {
 				{0, 0, 0, 0, 0, 0, 2, 6, 0},
 				{5, 0, 0, 7, 0, 3, 0, 0, 0},
 			},
-			expectedBoard: sudoku.Board{
+			expectedBoard: board.Board{
 				{1, 5, 9, 4, 3, 2, 8, 7, 6},
 				{2, 7, 4, 6, 5, 8, 1, 3, 9},
 				{8, 3, 6, 9, 1, 7, 5, 4, 2},
@@ -86,7 +86,7 @@ func TestSolveBoard(t *testing.T) {
 	}
 
 	for _, test := range solvables {
-		actualBoard, err := sudoku.SolveBoard(test.board)
+		actualBoard, err := board.SolveBoard(test.board)
 
 		if test.expectedBoard != *actualBoard || err != nil {
 			t.Errorf("Expected (%v, %v) but got (%v, %v)!",
@@ -95,10 +95,10 @@ func TestSolveBoard(t *testing.T) {
 	}
 
 	unsolvables := []struct {
-		board sudoku.Board
+		board board.Board
 	}{
 		{
-			board: sudoku.Board{
+			board: board.Board{
 				{0, 2, 0, 0, 9, 0, 5, 8, 0},
 				{7, 5, 0, 8, 4, 0, 9, 3, 2},
 				{8, 0, 9, 1, 2, 0, 0, 4, 0},
@@ -113,7 +113,7 @@ func TestSolveBoard(t *testing.T) {
 	}
 
 	for _, test := range unsolvables {
-		_, err := sudoku.SolveBoard(test.board)
+		_, err := board.SolveBoard(test.board)
 
 		if err == nil {
 			t.Error("Expected to return error but didn't!")

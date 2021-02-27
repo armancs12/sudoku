@@ -2,13 +2,11 @@ package main
 
 import (
 	"fmt"
-
-	"github.com/serhatscode/sudoku"
 )
 
 func main() {
 
-	game, err := sudoku.NewGame()
+	game, err := NewGame()
 	if err != nil {
 		fmt.Println(err)
 		return

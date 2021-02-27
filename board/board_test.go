@@ -1,13 +1,13 @@
-package sudoku_test
+package board_test
 
 import (
 	"testing"
 
-	"github.com/serhatscode/sudoku"
+	"github.com/serhatscode/sudoku/board"
 )
 
 var (
-	board = sudoku.Board{
+	testBoard = board.Board{
 		{5, 0, 0, 0, 1, 0, 0, 0, 0},
 		{0, 3, 1, 0, 0, 6, 8, 9, 0},
 		{4, 7, 0, 0, 8, 9, 1, 5, 3},
@@ -36,7 +36,7 @@ func TestColumnHasNumber(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		actual := board.ColumnHasNumber(test.column, test.number)
+		actual := testBoard.ColumnHasNumber(test.column, test.number)
 
 		if test.expected != actual {
 			t.Errorf("Test: (Column %v has %v should return %v) failed!",
@@ -61,7 +61,7 @@ func TestRowHasNumber(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		actual := board.RowHasNumber(test.row, test.number)
+		actual := testBoard.RowHasNumber(test.row, test.number)
 
 		if test.expected != actual {
 			t.Errorf("Test: (Row %v has %v should return %v) failed!",
@@ -93,7 +93,7 @@ func TestBoxHasNumber(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		actual := board.BoxHasNumber(test.column, test.row, test.number)
+		actual := testBoard.BoxHasNumber(test.column, test.row, test.number)
 
 		if test.expected != actual {
 			t.Errorf("Test: (Box (%v, %v) has %v should return %v) failed!",
@@ -127,7 +127,7 @@ func TestIsGuessValid(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		actual := board.IsGuessValid(test.column, test.row, test.guess)
+		actual := testBoard.IsGuessValid(test.column, test.row, test.guess)
 
 		if test.expected != actual {
 			t.Errorf("Test: (Guess %v in (%v, %v) is valid should return %v) failed!",
@@ -138,13 +138,13 @@ func TestIsGuessValid(t *testing.T) {
 
 func TestGetNextEmptyCell(t *testing.T) {
 	tests := []struct {
-		board         sudoku.Board
+		board         board.Board
 		expectedCol   int
 		expectedRow   int
 		expectedFound bool
 	}{
 		{
-			board: sudoku.Board{
+			board: board.Board{
 				{1, 2, 3, 4, 5, 6, 7, 8, 9},
 				{6, 5, 4, 9, 8, 7, 1, 2, 3},
 				{9, 8, 7, 1, 2, 3, 4, 5, 6},
@@ -160,7 +160,7 @@ func TestGetNextEmptyCell(t *testing.T) {
 			expectedFound: true,
 		},
 		{
-			board: sudoku.Board{
+			board: board.Board{
 				{1, 2, 3, 4, 5, 6, 7, 8, 9},
 				{6, 5, 4, 9, 8, 7, 1, 2, 3},
 				{9, 8, 7, 1, 2, 3, 4, 5, 6},
@@ -176,7 +176,7 @@ func TestGetNextEmptyCell(t *testing.T) {
 			expectedFound: true,
 		},
 		{
-			board: sudoku.Board{
+			board: board.Board{
 				{1, 2, 3, 4, 5, 6, 7, 8, 9},
 				{6, 5, 4, 9, 8, 7, 1, 2, 3},
 				{9, 8, 7, 1, 2, 3, 4, 5, 6},
@@ -192,7 +192,7 @@ func TestGetNextEmptyCell(t *testing.T) {
 			expectedFound: true,
 		},
 		{
-			board: sudoku.Board{
+			board: board.Board{
 				{1, 2, 3, 4, 5, 6, 7, 8, 9},
 				{6, 5, 4, 9, 8, 7, 1, 2, 3},
 				{9, 8, 7, 1, 2, 3, 4, 5, 6},

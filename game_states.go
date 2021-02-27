@@ -1,9 +1,10 @@
-package sudoku
+package main
 
 import (
 	"fmt"
 
 	"github.com/gdamore/tcell/v2"
+	"github.com/serhatscode/sudoku/board"
 	"github.com/serhatscode/sudoku/ui"
 )
 
@@ -112,7 +113,7 @@ func NewMenuState(game IGame) *MenuState {
 				game.PopState()
 			},
 			func() {
-				newBoard := NewBoard(40)
+				newBoard := board.NewBoard(40)
 				game.SetBoard(&newBoard)
 				game.PopState()
 			},
