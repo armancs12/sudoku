@@ -13,8 +13,8 @@ type IGame interface {
 	Start() error
 	Exit()
 
-	Board() *board.Board
-	SetBoard(board *board.Board)
+	Board() board.IBoard
+	SetBoard(board board.IBoard)
 
 	MinWidth() int
 	MinHeight() int
@@ -26,7 +26,7 @@ type IGame interface {
 
 // Game ...
 type Game struct {
-	board  board.Board
+	board  board.IBoard
 	state  StateManager
 	screen tcell.Screen
 
@@ -41,7 +41,7 @@ func NewGame() (IGame, error) {
 	}
 
 	game := &Game{
-		board:     board.NewBoard(40),
+		board:     board.New(board.Medium),
 		screen:    screen,
 		minWidth:  ui.BoardWidth,
 		minHeight: ui.BoardHeight,
@@ -82,13 +82,13 @@ func (game *Game) Exit() {
 }
 
 // Board returns the sudoku board
-func (game *Game) Board() *board.Board {
-	return &game.board
+func (game *Game) Board() board.IBoard {
+	return game.board
 }
 
 // SetBoard sets the sudoku board
-func (game *Game) SetBoard(board *board.Board) {
-	game.board = *board
+func (game *Game) SetBoard(board board.IBoard) {
+	game.board = board
 }
 
 // State returns the current game state

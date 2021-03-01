@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gdamore/tcell/v2"
+	"github.com/serhatscode/sudoku/board"
 )
 
 // BoardOutline for board widget
@@ -37,9 +38,8 @@ var BoardWidth = len(BoardOutline[0])
 
 // BoardWidget is an ui widget for sudoku board representation
 type BoardWidget struct {
-	Board   [9][9]int
-	CursorX int
-	CursorY int
+	Board     board.IBoard
+	CursorPos board.Point2
 
 	CursorColor tcell.Color
 	NumberColor tcell.Color
@@ -84,7 +84,7 @@ func (bw *BoardWidget) Height() int {
 
 // checkCell checks if given x, y is corresponds to a cell of the sudoku board.
 // If so, returns it. Else it will return 0
-func (bw *BoardWidget) checkCell(x, y int) int {
+func (bw *BoardWidget) checkCell(x, y int) board.Value {
 	if bw.isCellPosition(x, y) {
 		return bw.getCellValue(x, y)
 	}
@@ -95,8 +95,11 @@ func (*BoardWidget) isCellPosition(x, y int) bool {
 	return (x-2)%4 == 0 && (y-1)%2 == 0
 }
 
-func (bw *BoardWidget) getCellValue(x, y int) int {
-	return bw.Board[(y-1)/2][(x-2)/4]
+func (bw *BoardWidget) getCellValue(x, y int) board.Value {
+	return bw.Board.Get(board.Point2{
+		X: (x - 2) / 4,
+		Y: (y - 1) / 2,
+	})
 }
 
 func (bw *BoardWidget) drawCursor(screen tcell.Screen, x, y int) {
@@ -104,8 +107,8 @@ func (bw *BoardWidget) drawCursor(screen tcell.Screen, x, y int) {
 		Background(bw.CursorColor).
 		Foreground(bw.NumberColor)
 
-	cellX := x + bw.CursorX*4 + 2
-	cellY := y + bw.CursorY*2 + 1
+	cellX := x + bw.CursorPos.X*4 + 2
+	cellY := y + bw.CursorPos.Y*2 + 1
 
 	char, _, _, _ := screen.GetContent(cellX, cellY)
 

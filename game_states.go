@@ -25,8 +25,8 @@ type State interface {
 
 // PlayState is the state of gameplay
 type PlayState struct {
-	Game       IGame
-	PosX, PosY int
+	Game IGame
+	Pos  board.Point2
 }
 
 // NewPlayState returns a new PlayState
@@ -34,8 +34,7 @@ func NewPlayState(game IGame) *PlayState {
 	return &PlayState{
 		Game: game,
 		// center of the board
-		PosX: 4,
-		PosY: 4,
+		Pos: board.Point2{X: 4, Y: 4},
 	}
 }
 
@@ -56,22 +55,22 @@ func (ps *PlayState) OnKeyPress(event *tcell.EventKey) {
 		return
 	}
 
-	if key == tcell.KeyUp && ps.PosY > 0 {
-		ps.PosY--
-	} else if key == tcell.KeyDown && ps.PosY < 8 {
-		ps.PosY++
-	} else if key == tcell.KeyLeft && ps.PosX > 0 {
-		ps.PosX--
-	} else if key == tcell.KeyRight && ps.PosX < 8 {
-		ps.PosX++
+	if key == tcell.KeyUp && ps.Pos.Y > 0 {
+		ps.Pos.Y--
+	} else if key == tcell.KeyDown && ps.Pos.Y < 8 {
+		ps.Pos.Y++
+	} else if key == tcell.KeyLeft && ps.Pos.X > 0 {
+		ps.Pos.X--
+	} else if key == tcell.KeyRight && ps.Pos.X < 8 {
+		ps.Pos.X++
 	} else {
 		char := event.Rune()
 		if char == 'e' || char == 'E' {
-			ps.Game.Board()[ps.PosY][ps.PosX] = 0
+			ps.Game.Board().Set(ps.Pos, 0)
 		} else {
 			num := int(char - '0')
 			if num > 0 && num < 10 {
-				ps.Game.Board()[ps.PosY][ps.PosX] = num
+				ps.Game.Board().Set(ps.Pos, board.Value(num))
 			}
 		}
 	}
@@ -80,9 +79,8 @@ func (ps *PlayState) OnKeyPress(event *tcell.EventKey) {
 // Draw draws the board
 func (ps *PlayState) Draw() {
 	ui.DrawCenter(&ui.BoardWidget{
-		Board:       *ps.Game.Board(),
-		CursorX:     ps.PosX,
-		CursorY:     ps.PosY,
+		Board:       ps.Game.Board(),
+		CursorPos:   ps.Pos,
 		CursorColor: tcell.ColorRed,
 		NumberColor: tcell.ColorBlack,
 		BorderColor: tcell.ColorBlack,
@@ -113,8 +111,7 @@ func NewMenuState(game IGame) *MenuState {
 				game.PopState()
 			},
 			func() {
-				newBoard := board.NewBoard(40)
-				game.SetBoard(&newBoard)
+				game.SetBoard(board.New(board.Medium))
 				game.PopState()
 			},
 			func() {

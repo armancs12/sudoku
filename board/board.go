@@ -5,94 +5,165 @@ import (
 	"time"
 )
 
-// Board is representing sudoku board
-type Board [9][9]int
+// Size of board
+const Size = 9
 
-// NewBoard returns a new unsolved board
-func NewBoard(difficulty byte) Board {
-	firstRow := shuffleRow([9]int{1, 2, 3, 4, 5, 6, 7, 8, 9})
+// Board Difficulty
+const (
+	Beginner = byte(20)
+	Easy     = byte(30)
+	Medium   = byte(40)
+	Hard     = byte(50)
+	VeryHard = byte(60)
+)
 
-	// Use SolveBoard function to get a complete valid board
-	board, _ := SolveBoard(Board{firstRow})
+// Value is a cell value in a sudoku board
+type Value int
+
+// Point2 is a position in a 2d array
+type Point2 struct{ X, Y int }
+
+// IBoard is an inteface for a sudoku board
+type IBoard interface {
+
+	// Get returns the cell value at the given position
+	Get(pos Point2) Value
+
+	// Set sets the cell value at the given position
+	Set(pos Point2, value Value)
+
+	// IsPredefined returns if the cell value is defined by system
+	IsPredefined(pos Point2) bool
+
+	// IsCorrect returns if the cell value is correct value
+	IsCorrect(pos Point2) bool
+
+	// GetConflicts returns positions of cells that has the given value
+	// in row, column and subsquare of the given position
+	GetConflicts(pos Point2, value Value) map[Point2]struct{}
+
+	// GetPositions returns positions of cells
+	// that has the given value in complete board
+	GetPositions(value Value) map[Point2]struct{}
+}
+
+// New returns a new board instance
+func New(difficulty byte) IBoard {
+	firstRow := randomRow()
+	complete, _ := Solve(&[Size][Size]Value{firstRow})
+	grid := *complete
 
 	for difficulty > 0 {
-		column, row := getRandowCell()
-		if !isEmptyCell(*board, column, row) {
-			board[row][column] = 0
+		pos := randomPos()
+		if grid[pos.Y][pos.X] != 0 {
+			grid[pos.Y][pos.X] = 0
 			difficulty--
 		}
 	}
 
-	return *board
+	return NewCustom(grid, *complete)
 }
 
-// ColumnHasNumber checks if the column has same number
-func (board *Board) ColumnHasNumber(column, number int) bool {
-	for _, row := range board {
-		if number == row[column] {
-			return true
-		}
-	}
-	return false
-}
+// NewCustom returns a new board instance with custom values
+func NewCustom(grid [Size][Size]Value, complete [Size][Size]Value) IBoard {
+	board := &board{}
 
-// RowHasNumber checks if the row has same number
-func (board *Board) RowHasNumber(row, number int) bool {
-	for _, num := range board[row] {
-		if number == num {
-			return true
-		}
-	}
-	return false
-}
-
-// BoxHasNumber checks if the box has same number
-func (board *Board) BoxHasNumber(boxColumn, boxRow, number int) bool {
-	boxSlice := getBoxSlice(*board, boxColumn, boxRow)
-	for _, row := range boxSlice {
-		for _, num := range row {
-			if number == num {
-				return true
+	for i := 0; i < Size; i++ {
+		for j := 0; j < Size; j++ {
+			board[i][j] = cell{
+				value:      grid[i][j],
+				predefined: grid[i][j] != 0,
+				correct:    complete[i][j],
 			}
 		}
 	}
-	return false
+
+	return board
 }
 
-// IsGuessValid checks if guess not violates board rules
-func (board *Board) IsGuessValid(column, row int, guess int) bool {
-	boxColumn, boxRow := getBoxCoordinate(column, row)
-	return !(board.BoxHasNumber(boxColumn, boxRow, guess) ||
-		board.ColumnHasNumber(column, guess) ||
-		board.RowHasNumber(row, guess))
+// ===========================================
+type cell struct {
+	value      Value
+	predefined bool
+	correct    Value
 }
 
-// GetNextEmptyCell gets first empty cell if exist
-func (board *Board) GetNextEmptyCell() (int, int, bool) {
-	for i, row := range board {
-		for j, num := range row {
-			if num == 0 {
-				return j, i, true
-			}
+type board [Size][Size]cell
+
+func (board *board) Get(pos Point2) Value {
+	return board[pos.Y][pos.X].value
+}
+
+func (board *board) Set(pos Point2, value Value) {
+	if !board.IsPredefined(pos) {
+		board[pos.Y][pos.X].value = value
+	}
+}
+
+func (board *board) IsPredefined(pos Point2) bool {
+	return board[pos.Y][pos.X].predefined
+}
+
+func (board *board) IsCorrect(pos Point2) bool {
+	return board.Get(pos) == board[pos.Y][pos.X].correct
+}
+
+func (board *board) GetConflicts(pos Point2, value Value) map[Point2]struct{} {
+	values := map[Point2]struct{}{}
+
+	// check row
+	for i := 0; i < Size; i++ {
+		cPos := Point2{i, pos.Y}
+		if board.Get(cPos) == value {
+			values[cPos] = struct{}{}
 		}
 	}
-	return 0, 0, false
-}
 
-func getBoxSlice(board Board, boxColumn, boxRow int) [][]int {
-	slice := [][]int{}
+	// check column
+	for i := 0; i < Size; i++ {
+		cPos := Point2{pos.X, i}
+		if board.Get(cPos) == value {
+			values[cPos] = struct{}{}
+		}
+	}
+
+	// check subsquare
+	sPos := Point2{
+		X: int(pos.X/3) * 3,
+		Y: int(pos.Y/3) * 3,
+	}
 	for i := 0; i < 3; i++ {
-		slice = append(slice, board[(boxRow*3 + i)][(boxColumn*3):(boxColumn*3+3)])
+		for j := 0; j < 3; j++ {
+			cPos := Point2{sPos.X + j, sPos.Y + i}
+			if board.Get(cPos) == value {
+				values[cPos] = struct{}{}
+			}
+		}
 	}
 
-	return slice
+	delete(values, pos)
+	return values
 }
 
-func getBoxCoordinate(column, row int) (int, int) {
-	return (column / 3), (row / 3)
+func (board *board) GetPositions(value Value) map[Point2]struct{} {
+	values := map[Point2]struct{}{}
+
+	for i := 0; i < Size; i++ {
+		for j := 0; j < Size; j++ {
+			pos := Point2{j, i}
+			if board.Get(pos) == value {
+				values[pos] = struct{}{}
+			}
+		}
+	}
+
+	return values
 }
 
-func shuffleRow(row [9]int) [9]int {
+// randomRow returns a randomly shuffled row
+func randomRow() [Size]Value {
+	row := [Size]Value{1, 2, 3, 4, 5, 6, 7, 8, 9}
+
 	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(9, func(i, j int) {
 		row[i], row[j] = row[j], row[i]
@@ -101,12 +172,9 @@ func shuffleRow(row [9]int) [9]int {
 	return row
 }
 
-func getRandowCell() (int, int) {
+// randomPos returns a random position on the board
+func randomPos() Point2 {
 	rand.Seed(time.Now().UnixNano())
 
-	return rand.Intn(9), rand.Intn(9)
-}
-
-func isEmptyCell(board Board, column, row int) bool {
-	return board[row][column] == 0
+	return Point2{rand.Intn(Size), rand.Intn(Size)}
 }
