@@ -26,9 +26,9 @@ changelog:
   sort: asc
   filters:
     exclude:
-      - "^refactor:"
-      - "^chore:"
-      - "^test:"
+      - "^refactor"
+      - "^chore"
+      - "^test"
 
 archives:
   - replacements:
