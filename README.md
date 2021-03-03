@@ -1,7 +1,7 @@
 <div style="text-align:center;">
-  <h1> Sudoku </h1>
-  <p> Play sudoku on your terminal! </p>
-  <img src="images/screenshot.png">
+  <h1 align="center"> Sudoku </h1>
+  <p align="center"> Play sudoku on your terminal! </p>
+  <p align="center"> <img src="images/screenshot.png" /> </p>
 </div>
 
 ## Introduction
