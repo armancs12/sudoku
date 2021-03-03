@@ -1,0 +1,39 @@
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - freebsd
+      - linux
+      - windows
+      - darwin
+  ldflags:
+    - -s -w -X main.version={{.Version}} -X main.commit={{.ShortCommit}} -X main.date={{.Date}}
+
+nfpms:
+  - license: MIT
+    maintainer: Serhat S <serhats@tutamail.com>
+    homepage: https://github.com/serhatscode/sudoku
+    description: "🧩 Play sudoku on your terminal!"
+    formats:
+      - rpm
+      - deb
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^refactor:"
+      - "^chore:"
+      - "^test:"
+
+archives:
+  - replacements:
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      386: i386
+      amd64: x86_64
