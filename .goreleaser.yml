@@ -10,8 +10,7 @@ builds:
       - linux
       - windows
       - darwin
-  ldflags:
-    - -s -w -X main.version={{.Version}} -X main.commit={{.ShortCommit}} -X main.date={{.Date}}
+    ldflags: -s -w -X main.version={{.Version}} -X main.commit={{.ShortCommit}} -X main.date={{.Date}}
 
 nfpms:
   - license: MIT
