@@ -79,12 +79,12 @@ func (ps *PlayState) OnKeyPress(event *tcell.EventKey) {
 // Draw draws the board
 func (ps *PlayState) Draw() {
 	ui.DrawCenter(&ui.BoardWidget{
-		Board:       ps.Game.Board(),
-		CursorPos:   ps.Pos,
-		CursorColor: tcell.ColorRed,
-		NumberColor: tcell.ColorBlack,
-		BorderColor: tcell.ColorBlack,
-		Background:  tcell.ColorWhite,
+		Board:      ps.Game.Board(),
+		CursorPos:  ps.Pos,
+		CursorBG:   tcell.ColorRed,
+		NumberFG:   tcell.ColorBlack,
+		BorderFG:   tcell.ColorBlack,
+		Background: tcell.ColorWhite,
 	})
 }
 

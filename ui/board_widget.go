@@ -41,20 +41,20 @@ type BoardWidget struct {
 	Board     board.IBoard
 	CursorPos board.Point2
 
-	CursorColor tcell.Color
-	NumberColor tcell.Color
-	BorderColor tcell.Color
-	Background  tcell.Color
+	CursorBG   tcell.Color
+	NumberFG   tcell.Color
+	BorderFG   tcell.Color
+	Background tcell.Color
 }
 
 // Draw draws the board widget to the terminal
 func (bw *BoardWidget) Draw(screen tcell.Screen, x, y int) {
 	style := tcell.StyleDefault.
 		Background(bw.Background).
-		Foreground(bw.BorderColor)
+		Foreground(bw.BorderFG)
 	numStyle := tcell.StyleDefault.
 		Background(bw.Background).
-		Foreground(bw.NumberColor)
+		Foreground(bw.NumberFG)
 
 	for i, line := range BoardOutline {
 		for j, char := range line {
@@ -104,8 +104,8 @@ func (bw *BoardWidget) getCellValue(x, y int) board.Value {
 
 func (bw *BoardWidget) drawCursor(screen tcell.Screen, x, y int) {
 	style := tcell.StyleDefault.
-		Background(bw.CursorColor).
-		Foreground(bw.NumberColor)
+		Background(bw.CursorBG).
+		Foreground(bw.NumberFG)
 
 	cellX := x + bw.CursorPos.X*4 + 2
 	cellY := y + bw.CursorPos.Y*2 + 1
