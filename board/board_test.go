@@ -33,6 +33,28 @@ func getBoard() board.IBoard {
 	)
 }
 
+func TestNew(t *testing.T) {
+	tests := []struct {
+		difficulty byte
+		expected   int
+	}{
+		{board.Beginner, 20},
+		{board.Easy, 30},
+		{board.Medium, 40},
+		{board.Hard, 50},
+		{board.VeryHard, 60},
+	}
+
+	for _, test := range tests {
+		board := board.New(test.difficulty)
+		actual := len(board.GetPositions(0))
+		if test.expected != actual {
+			t.Errorf("board.New(%d) failed: Expected: %d, Actual:%d",
+				test.difficulty, test.expected, actual)
+		}
+	}
+}
+
 func TestGet(t *testing.T) {
 	tBoard := getBoard()
 
