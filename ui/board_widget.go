@@ -41,10 +41,12 @@ type BoardWidget struct {
 	Board     board.IBoard
 	CursorPos board.Point2
 
-	CursorBG   tcell.Color
-	NumberFG   tcell.Color
-	BorderFG   tcell.Color
-	Background tcell.Color
+	CursorBG     tcell.Color
+	NumberFG     tcell.Color
+	BorderFG     tcell.Color
+	PredefinedFG tcell.Color
+	ConflictFG   tcell.Color
+	Background   tcell.Color
 }
 
 // Draw draws the board widget to the terminal
