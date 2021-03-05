@@ -51,27 +51,8 @@ type BoardWidget struct {
 
 // Draw draws the board widget to the terminal
 func (bw *BoardWidget) Draw(screen tcell.Screen, x, y int) {
-	style := tcell.StyleDefault.
-		Background(bw.Background).
-		Foreground(bw.BorderFG)
-	numStyle := tcell.StyleDefault.
-		Background(bw.Background).
-		Foreground(bw.NumberFG)
-
-	for i, line := range BoardOutline {
-		for j, char := range line {
-			if number := bw.checkCell(j, i); number != 0 {
-				// Workaround for converting integer to rune
-				numChar := rune(fmt.Sprintf("%v", number)[0])
-
-				screen.SetContent(x+j, y+i, numChar, nil, numStyle)
-			} else {
-				screen.SetContent(x+j, y+i, char, nil, style)
-			}
-		}
-	}
-
-	bw.drawCursor(screen, x, y)
+	bw.drawBorders(screen, x, y)
+	bw.drawCells(screen, x, y)
 }
 
 // Width returns the width of the board widget
@@ -84,37 +65,89 @@ func (bw *BoardWidget) Height() int {
 	return BoardHeight
 }
 
-// checkCell checks if given x, y is corresponds to a cell of the sudoku board.
-// If so, returns it. Else it will return 0
-func (bw *BoardWidget) checkCell(x, y int) board.Value {
-	if bw.isCellPosition(x, y) {
-		return bw.getCellValue(x, y)
-	}
-	return 0
-}
-
-func (*BoardWidget) isCellPosition(x, y int) bool {
-	return (x-2)%4 == 0 && (y-1)%2 == 0
-}
-
-func (bw *BoardWidget) getCellValue(x, y int) board.Value {
-	return bw.Board.Get(board.Point2{
-		X: (x - 2) / 4,
-		Y: (y - 1) / 2,
-	})
-}
-
-func (bw *BoardWidget) drawCursor(screen tcell.Screen, x, y int) {
+func (bw *BoardWidget) drawBorders(screen tcell.Screen, x, y int) {
 	style := tcell.StyleDefault.
-		Background(bw.CursorBG).
-		Foreground(bw.NumberFG)
+		Background(bw.Background).
+		Foreground(bw.BorderFG)
 
-	cellX := x + bw.CursorPos.X*4 + 2
-	cellY := y + bw.CursorPos.Y*2 + 1
+	// Horizontal lines
+	for i := 0; i < bw.Height(); i += 2 {
+		for j := 0; j < bw.Width(); j++ {
+			screen.SetContent(x+j, y+i, BoardOutline[i][j], nil, style)
+		}
+	}
 
-	char, _, _, _ := screen.GetContent(cellX, cellY)
+	// Vertical lines
+	for i := 1; i < bw.Height(); i += 2 {
+		for j := 0; j < bw.Width(); j += 4 {
+			screen.SetContent(x+j, y+i, BoardOutline[i][j], nil, style)
+		}
+	}
+}
 
-	screen.SetContent(cellX-1, cellY, ' ', nil, style)
-	screen.SetContent(cellX, cellY, char, nil, style)
-	screen.SetContent(cellX+1, cellY, ' ', nil, style)
+func (bw *BoardWidget) drawCells(screen tcell.Screen, x, y int) {
+	styles := bw.getCellStyles()
+
+	for i := 0; i < board.Size; i++ {
+		for j := 0; j < board.Size; j++ {
+			pos := board.Point2{X: j, Y: i}
+			cx, cy := bw.gridToScreen(pos)
+			char := bw.getCellRune(pos)
+			style := *styles[i][j]
+
+			screen.SetContent(x+cx, y+cy, ' ', nil, style)
+			screen.SetContent(x+cx+1, y+cy, char, nil, style)
+			screen.SetContent(x+cx+2, y+cy, ' ', nil, style)
+		}
+	}
+}
+
+func (bw *BoardWidget) gridToScreen(pos board.Point2) (int, int) {
+	return pos.X*4 + 1, pos.Y*2 + 1
+}
+
+func (bw *BoardWidget) getCellRune(pos board.Point2) rune {
+	if bw.Board.Get(pos) == 0 {
+		return ' '
+	}
+	return rune(fmt.Sprintf("%v", bw.Board.Get(pos))[0])
+}
+
+func (bw *BoardWidget) getCellStyles() [board.Size][board.Size]*tcell.Style {
+	normal := tcell.StyleDefault.Background(bw.Background).Foreground(bw.NumberFG)
+	predefined := tcell.StyleDefault.Background(bw.Background).Foreground(bw.PredefinedFG)
+	cursor := tcell.StyleDefault.Background(bw.CursorBG).Foreground(bw.NumberFG)
+	conflicts := tcell.StyleDefault.Background(bw.Background).Foreground(bw.ConflictFG)
+	wrong := tcell.StyleDefault.Background(bw.Background).Foreground(bw.ConflictFG)
+
+	styles := [board.Size][board.Size]*tcell.Style{}
+
+	styles[bw.CursorPos.Y][bw.CursorPos.X] = &cursor
+
+	// Set conflict style
+	value := bw.Board.Get(bw.CursorPos)
+	if value != 0 {
+		for conflict := range bw.Board.GetConflicts(bw.CursorPos, value) {
+			styles[conflict.Y][conflict.X] = &conflicts
+		}
+	}
+
+	// Set other styles
+	for i := 0; i < board.Size; i++ {
+		for j := 0; j < board.Size; j++ {
+			if styles[i][j] != nil {
+				continue
+			}
+
+			pos := board.Point2{X: j, Y: i}
+			if bw.Board.IsPredefined(pos) {
+				styles[pos.Y][pos.X] = &predefined
+			} else if bw.Board.Get(pos) != 0 && !bw.Board.IsCorrect(pos) {
+				styles[pos.Y][pos.X] = &wrong
+			} else {
+				styles[pos.Y][pos.X] = &normal
+			}
+		}
+	}
+	return styles
 }
