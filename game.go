@@ -13,8 +13,8 @@ type Game interface {
 	Start() error
 	Exit()
 
-	Board() board.IBoard
-	SetBoard(board board.IBoard)
+	Board() board.Board
+	SetBoard(board board.Board)
 
 	MinWidth() int
 	MinHeight() int
@@ -25,7 +25,7 @@ type Game interface {
 }
 
 type game struct {
-	board  board.IBoard
+	board  board.Board
 	state  stateManager
 	screen tcell.Screen
 
@@ -78,11 +78,11 @@ func (game *game) Exit() {
 	os.Exit(0)
 }
 
-func (game *game) Board() board.IBoard {
+func (game *game) Board() board.Board {
 	return game.board
 }
 
-func (game *game) SetBoard(board board.IBoard) {
+func (game *game) SetBoard(board board.Board) {
 	game.board = board
 }
 

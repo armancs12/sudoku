@@ -38,7 +38,7 @@ var BoardWidth = len(BoardOutline[0])
 
 // BoardWidget is an ui widget for sudoku board representation
 type BoardWidget struct {
-	Board     board.IBoard
+	Board     board.Board
 	CursorPos board.Point2
 
 	CursorBG     tcell.Color

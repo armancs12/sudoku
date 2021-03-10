@@ -23,9 +23,8 @@ type Value int
 // Point2 is a position in a 2d array
 type Point2 struct{ X, Y int }
 
-// IBoard is an inteface for a sudoku board
-type IBoard interface {
-
+// Board is an interface for a sudoku board
+type Board interface {
 	// Get returns the cell value at the given position
 	Get(pos Point2) Value
 
@@ -48,7 +47,7 @@ type IBoard interface {
 }
 
 // New returns a new board instance
-func New(difficulty byte) IBoard {
+func New(difficulty byte) Board {
 	firstRow := randomRow()
 	complete, _ := Solve(&[Size][Size]Value{firstRow})
 	grid := *complete
@@ -65,7 +64,7 @@ func New(difficulty byte) IBoard {
 }
 
 // NewCustom returns a new board instance with custom values
-func NewCustom(grid [Size][Size]Value, complete [Size][Size]Value) IBoard {
+func NewCustom(grid [Size][Size]Value, complete [Size][Size]Value) Board {
 	board := &board{}
 
 	for i := 0; i < Size; i++ {
@@ -81,7 +80,6 @@ func NewCustom(grid [Size][Size]Value, complete [Size][Size]Value) IBoard {
 	return board
 }
 
-// ===========================================
 type cell struct {
 	value      Value
 	predefined bool

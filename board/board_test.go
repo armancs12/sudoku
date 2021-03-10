@@ -6,7 +6,7 @@ import (
 	"github.com/serhatscode/sudoku/board"
 )
 
-func getBoard() board.IBoard {
+func getBoard() board.Board {
 	return board.NewCustom(
 		[9][9]board.Value{
 			{0, 2, 0, 0, 9, 0, 5, 8, 0},
