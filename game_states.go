@@ -12,7 +12,7 @@ import (
 // The current game state will handle:
 //
 // - What to do when game resized
-// - What to do when k	ey pressed
+// - What to do when key pressed
 // - What to draw
 type State interface {
 	// OnResize will be invoked when terminal resized
@@ -23,31 +23,28 @@ type State interface {
 	Draw()
 }
 
-// PlayState is the state of gameplay
-type PlayState struct {
-	Game IGame
+type playState struct {
+	Game Game
 	Pos  board.Point2
 }
 
-// NewPlayState returns a new PlayState
-func NewPlayState(game IGame) *PlayState {
-	return &PlayState{
+// NewPlayState returns a new play state
+func NewPlayState(game Game) State {
+	return &playState{
 		Game: game,
 		// center of the board
 		Pos: board.Point2{X: 4, Y: 4},
 	}
 }
 
-// OnResize checks if size is big enough
-func (ps *PlayState) OnResize(event *tcell.EventResize) {
+func (ps *playState) OnResize(event *tcell.EventResize) {
 	width, height := event.Size()
 	if width < ps.Game.MinWidth() || height < ps.Game.MinHeight() {
 		ps.Game.PushState(NewSmallSizeState(ps.Game, width, height))
 	}
 }
 
-// OnKeyPress changes the board indicator position
-func (ps *PlayState) OnKeyPress(event *tcell.EventKey) {
+func (ps *playState) OnKeyPress(event *tcell.EventKey) {
 	key := event.Key()
 
 	if key == tcell.KeyESC {
@@ -76,8 +73,7 @@ func (ps *PlayState) OnKeyPress(event *tcell.EventKey) {
 	}
 }
 
-// Draw draws the board
-func (ps *PlayState) Draw() {
+func (ps *playState) Draw() {
 	ui.DrawCenter(&ui.BoardWidget{
 		Board:        ps.Game.Board(),
 		CursorPos:    ps.Pos,
@@ -90,17 +86,16 @@ func (ps *PlayState) Draw() {
 	})
 }
 
-// MenuState is the state of game menu
-type MenuState struct {
-	Game      IGame
+type menuState struct {
+	Game      Game
 	Pos       int
 	Options   []string
 	Functions []func()
 }
 
-// NewMenuState returns a new MenuState
-func NewMenuState(game IGame) *MenuState {
-	return &MenuState{
+// NewMenuState returns a new menu state
+func NewMenuState(game Game) State {
+	return &menuState{
 		Game: game,
 		Pos:  0,
 		Options: []string{
@@ -123,16 +118,14 @@ func NewMenuState(game IGame) *MenuState {
 	}
 }
 
-// OnResize checks if size is big enough
-func (ms *MenuState) OnResize(event *tcell.EventResize) {
+func (ms *menuState) OnResize(event *tcell.EventResize) {
 	width, height := event.Size()
 	if width < ms.Game.MinWidth() || height < ms.Game.MinHeight() {
 		ms.Game.PushState(NewSmallSizeState(ms.Game, width, height))
 	}
 }
 
-// OnKeyPress changes the menu indicator position
-func (ms *MenuState) OnKeyPress(event *tcell.EventKey) {
+func (ms *menuState) OnKeyPress(event *tcell.EventKey) {
 	key := event.Key()
 	if key == tcell.KeyESC {
 		ms.Game.PopState()
@@ -148,8 +141,7 @@ func (ms *MenuState) OnKeyPress(event *tcell.EventKey) {
 	}
 }
 
-// Draw draws the game menu
-func (ms *MenuState) Draw() {
+func (ms *menuState) Draw() {
 	ui.DrawCenter(&ui.BoxWidget{
 		Child: &ui.MenuWidget{
 			Options:          ms.Options,
@@ -169,21 +161,18 @@ func (ms *MenuState) Draw() {
 	})
 }
 
-// SmallSizeState is the state of terminal size not being big enough
-// At this state, game will draw an error message
-type SmallSizeState struct {
-	Game   IGame
+type smallSizeState struct {
+	Game   Game
 	Width  int
 	Height int
 }
 
-// NewSmallSizeState returns a new SmallSizeState
-func NewSmallSizeState(game IGame, width, height int) *SmallSizeState {
-	return &SmallSizeState{game, width, height}
+// NewSmallSizeState returns a new small size state
+func NewSmallSizeState(game Game, width, height int) State {
+	return &smallSizeState{game, width, height}
 }
 
-// OnResize checks if size is big enough
-func (sss *SmallSizeState) OnResize(event *tcell.EventResize) {
+func (sss *smallSizeState) OnResize(event *tcell.EventResize) {
 	width, height := event.Size()
 	if width >= sss.Game.MinWidth() && height >= sss.Game.MinHeight() {
 		sss.Game.PopState()
@@ -192,11 +181,9 @@ func (sss *SmallSizeState) OnResize(event *tcell.EventResize) {
 	}
 }
 
-// OnKeyPress doesn't do anything
-func (sss *SmallSizeState) OnKeyPress(event *tcell.EventKey) {}
+func (sss *smallSizeState) OnKeyPress(event *tcell.EventKey) {}
 
-// Draw draws the error message
-func (sss *SmallSizeState) Draw() {
+func (sss *smallSizeState) Draw() {
 	message := fmt.Sprintf("Please resize to\n at least %dx%d",
 		sss.Game.MinWidth(), sss.Game.MinHeight())
 	current := fmt.Sprintf("%dx%d", sss.Width, sss.Height)

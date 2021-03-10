@@ -8,8 +8,8 @@ import (
 	"github.com/serhatscode/sudoku/ui"
 )
 
-// IGame is an interface for the game
-type IGame interface {
+// Game is an interface for the game
+type Game interface {
 	Start() error
 	Exit()
 
@@ -24,28 +24,27 @@ type IGame interface {
 	PopState() State
 }
 
-// Game ...
-type Game struct {
+type game struct {
 	board  board.IBoard
-	state  StateManager
+	state  stateManager
 	screen tcell.Screen
 
 	minWidth, minHeight int
 }
 
-// NewGame returns a new Game
-func NewGame() (IGame, error) {
+// NewGame returns a new game
+func NewGame() (Game, error) {
 	screen, err := tcell.NewScreen()
 	if err != nil {
 		return nil, err
 	}
 
-	game := &Game{
+	game := &game{
 		board:     board.New(board.Medium),
 		screen:    screen,
 		minWidth:  ui.BoardWidth,
 		minHeight: ui.BoardHeight,
-		state:     StateManager{},
+		state:     stateManager{},
 	}
 
 	game.state.Push(NewPlayState(game))
@@ -53,8 +52,7 @@ func NewGame() (IGame, error) {
 	return game, nil
 }
 
-// Start starts the game
-func (game *Game) Start() error {
+func (game *game) Start() error {
 	err := ui.Init(game.screen)
 	if err != nil {
 		return err
@@ -75,55 +73,45 @@ func (game *Game) Start() error {
 	}
 }
 
-// Exit cleans the screen and exits the game
-func (game *Game) Exit() {
+func (game *game) Exit() {
 	game.screen.Fini()
 	os.Exit(0)
 }
 
-// Board returns the sudoku board
-func (game *Game) Board() board.IBoard {
+func (game *game) Board() board.IBoard {
 	return game.board
 }
 
-// SetBoard sets the sudoku board
-func (game *Game) SetBoard(board board.IBoard) {
+func (game *game) SetBoard(board board.IBoard) {
 	game.board = board
 }
 
-// State returns the current game state
-func (game *Game) State() State {
+func (game *game) State() State {
 	return game.state.Get()
 }
 
-// PushState pushes new state to on top of state stack
-func (game *Game) PushState(state State) {
+func (game *game) PushState(state State) {
 	game.state.Push(state)
 }
 
-// PopState pops the state from state stack
-func (game *Game) PopState() State {
+func (game *game) PopState() State {
 	return game.state.Pop()
 }
 
-// MinWidth returns minimum width
-// for the game to be able to run properly
-func (game *Game) MinWidth() int {
+func (game *game) MinWidth() int {
 	return game.minWidth
 }
 
-// MinHeight returns minimum height
-// for the game to be able to run properly
-func (game *Game) MinHeight() int {
+func (game *game) MinHeight() int {
 	return game.minHeight
 }
 
 // StateManager is an array of states
-type StateManager []State
+type stateManager []State
 
 // Get returns the current game state
 // which is the last element of the array
-func (sm *StateManager) Get() State {
+func (sm *stateManager) Get() State {
 	if len(*sm) > 0 {
 		return (*sm)[len(*sm)-1]
 	}
@@ -131,12 +119,12 @@ func (sm *StateManager) Get() State {
 }
 
 // Push appends the given state
-func (sm *StateManager) Push(state State) {
+func (sm *stateManager) Push(state State) {
 	*sm = append(*sm, state)
 }
 
 // Pop removes the last element
-func (sm *StateManager) Pop() State {
+func (sm *stateManager) Pop() State {
 	state := sm.Get()
 	if len(*sm) > 0 {
 		*sm = (*sm)[:len(*sm)-1]
