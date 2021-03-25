@@ -39,22 +39,18 @@ func NewMenuState(game Game) State {
 	return &menuState{
 		Game: game,
 		Pos:  0,
-		Options: []string{
-			"Resume",
-			"New Game",
-			"Exit",
-		},
-		Functions: []func(){
-			func() {
+		Options: []menuOption{
+			{"Resume", func() {
 				game.PopState()
-			},
-			func() {
+			}},
+			{"New Game", func() {
 				game.SetBoard(board.New(board.Medium))
 				game.PopState()
-			},
-			func() {
+			}},
+			{"Exit", func() {
 				game.Exit()
-			},
+
+			}},
 		},
 	}
 }

@@ -5,11 +5,15 @@ import (
 	"github.com/serhatscode/sudoku/ui"
 )
 
+type menuOption struct {
+	title    string
+	function func()
+}
+
 type menuState struct {
-	Game      Game
-	Pos       int
-	Options   []string
-	Functions []func()
+	Game    Game
+	Pos     int
+	Options []menuOption
 }
 
 func (ms *menuState) OnResize(event *tcell.EventResize) {
@@ -31,14 +35,14 @@ func (ms *menuState) OnKeyPress(event *tcell.EventKey) {
 	} else if key == tcell.KeyDown {
 		ms.Pos = (ms.Pos + 1) % len(ms.Options)
 	} else if key == tcell.KeyEnter {
-		ms.Functions[ms.Pos]()
+		ms.Options[ms.Pos].function()
 	}
 }
 
 func (ms *menuState) Draw() {
 	ui.DrawCenter(&ui.BoxWidget{
 		Child: &ui.MenuWidget{
-			Options:          ms.Options,
+			Options:          getTitlesFromOptions(ms.Options),
 			CursorIndex:      ms.Pos,
 			AlignCenter:      true,
 			Color:            tcell.ColorWhite,
@@ -53,4 +57,12 @@ func (ms *menuState) Draw() {
 		Color:         tcell.ColorWhite,
 		Background:    tcell.ColorRed,
 	})
+}
+
+func getTitlesFromOptions(options []menuOption) []string {
+	titles := []string{}
+	for i := 0; i < len(options); i++ {
+		titles = append(titles, options[i].title)
+	}
+	return titles
 }
