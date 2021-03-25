@@ -1,4 +1,4 @@
-package main
+package game
 
 import (
 	"os"
@@ -8,31 +8,35 @@ import (
 	"github.com/serhatscode/sudoku/ui"
 )
 
-// Game is an interface for the game
 type Game interface {
+	// Start starts the game
 	Start() error
+	// Exit exists the game
 	Exit()
 
+	// Board returns the current sudoku board
 	Board() board.Board
+	// SetBoard sets the current sudoku board
 	SetBoard(board board.Board)
 
+	// MinWidth returns minimum terminal width
+	// required to run the game
 	MinWidth() int
+	// MinHeight returns minimum terminal height
+	// required to run the game
 	MinHeight() int
 
+	// State returns the current game state
 	State() State
+	// PushState sets the current game state
+	// without replacing the previous one
 	PushState(state State)
+	// PopState returns the current state and
+	// sets the game state back to the previous state
 	PopState() State
 }
 
-type game struct {
-	board  board.Board
-	state  stateManager
-	screen tcell.Screen
-
-	minWidth, minHeight int
-}
-
-// NewGame returns a new game
+// NewGame returns a new game instance
 func NewGame() (Game, error) {
 	screen, err := tcell.NewScreen()
 	if err != nil {
@@ -40,16 +44,24 @@ func NewGame() (Game, error) {
 	}
 
 	game := &game{
-		board:     board.New(board.Medium),
-		screen:    screen,
-		minWidth:  ui.BoardWidth,
-		minHeight: ui.BoardHeight,
-		state:     stateManager{},
+		board:        board.New(board.Medium),
+		screen:       screen,
+		minWidth:     ui.BoardWidth,
+		minHeight:    ui.BoardHeight,
+		stateManager: stateManager{},
 	}
 
-	game.state.Push(NewPlayState(game))
+	game.stateManager.Push(NewPlayState(game))
 
 	return game, nil
+}
+
+type game struct {
+	board        board.Board
+	stateManager stateManager
+	screen       tcell.Screen
+
+	minWidth, minHeight int
 }
 
 func (game *game) Start() error {
@@ -87,15 +99,15 @@ func (game *game) SetBoard(board board.Board) {
 }
 
 func (game *game) State() State {
-	return game.state.Get()
+	return game.stateManager.Get()
 }
 
 func (game *game) PushState(state State) {
-	game.state.Push(state)
+	game.stateManager.Push(state)
 }
 
 func (game *game) PopState() State {
-	return game.state.Pop()
+	return game.stateManager.Pop()
 }
 
 func (game *game) MinWidth() int {
