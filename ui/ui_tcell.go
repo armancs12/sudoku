@@ -24,7 +24,7 @@ var mapKeys = map[tcell.Key]string{
 	tcell.KeyUp:    "arrow_up",
 	tcell.KeyDown:  "arrow_down",
 	tcell.KeyLeft:  "arrow_left",
-	tcell.KeyRight: "arrrow_right",
+	tcell.KeyRight: "arrow_right",
 	tcell.KeyEnter: "enter",
 	tcell.KeyESC:   "esc",
 	tcell.KeyCtrlZ: "ctrl+z",
