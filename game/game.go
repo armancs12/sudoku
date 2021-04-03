@@ -1,9 +1,6 @@
 package game
 
 import (
-	"os"
-
-	"github.com/gdamore/tcell/v2"
 	"github.com/serhatscode/sudoku/board"
 	"github.com/serhatscode/sudoku/ui"
 )
@@ -26,6 +23,9 @@ type Game interface {
 	// required to run the game
 	MinHeight() int
 
+	// Client returns the game client
+	Client() ui.Client
+
 	// State returns the current game state
 	State() State
 	// PushState sets the current game state
@@ -37,15 +37,10 @@ type Game interface {
 }
 
 // NewGame returns a new game instance
-func NewGame() (Game, error) {
-	screen, err := tcell.NewScreen()
-	if err != nil {
-		return nil, err
-	}
-
+func NewGame(client ui.Client) (Game, error) {
 	game := &game{
 		board:        board.New(board.Medium),
-		screen:       screen,
+		client:       client,
 		minWidth:     ui.BoardWidth,
 		minHeight:    ui.BoardHeight,
 		stateManager: stateManager{},
@@ -59,35 +54,36 @@ func NewGame() (Game, error) {
 type game struct {
 	board        board.Board
 	stateManager stateManager
-	screen       tcell.Screen
+	client       ui.Client
 
 	minWidth, minHeight int
 }
 
 func (game *game) Start() error {
-	err := ui.Init(game.screen)
+	game.client.OnResize(func(width, height int) {
+		game.State().OnResize(width, height)
+		game.State().Draw()
+	})
+
+	game.client.OnKeyPress(func(key string) {
+		if key == "ctrl+z" {
+			game.Exit()
+		}
+
+		game.State().OnKeyPress(key)
+		game.State().Draw()
+	})
+
+	err := game.client.Start()
 	if err != nil {
 		return err
 	}
 
-	for {
-		switch event := game.screen.PollEvent().(type) {
-		case *tcell.EventResize:
-			game.screen.Clear()
-			game.State().OnResize(event)
-		case *tcell.EventKey:
-			if event.Key() == tcell.KeyCtrlZ {
-				game.Exit()
-			}
-			game.State().OnKeyPress(event)
-		}
-		game.State().Draw()
-	}
+	return nil
 }
 
 func (game *game) Exit() {
-	game.screen.Fini()
-	os.Exit(0)
+	game.client.Stop()
 }
 
 func (game *game) Board() board.Board {
@@ -96,6 +92,10 @@ func (game *game) Board() board.Board {
 
 func (game *game) SetBoard(board board.Board) {
 	game.board = board
+}
+
+func (game *game) Client() ui.Client {
+	return game.client
 }
 
 func (game *game) State() State {

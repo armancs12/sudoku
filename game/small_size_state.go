@@ -13,8 +13,7 @@ type smallSizeState struct {
 	Height int
 }
 
-func (sss *smallSizeState) OnResize(event *tcell.EventResize) {
-	width, height := event.Size()
+func (sss *smallSizeState) OnResize(width, height int) {
 	if width >= sss.Game.MinWidth() && height >= sss.Game.MinHeight() {
 		sss.Game.PopState()
 	} else {
@@ -22,15 +21,15 @@ func (sss *smallSizeState) OnResize(event *tcell.EventResize) {
 	}
 }
 
-func (sss *smallSizeState) OnKeyPress(event *tcell.EventKey) {}
+func (sss *smallSizeState) OnKeyPress(key string) {}
 
 func (sss *smallSizeState) Draw() {
 	message := fmt.Sprintf("Please resize to\n at least %dx%d",
 		sss.Game.MinWidth(), sss.Game.MinHeight())
 	current := fmt.Sprintf("%dx%d", sss.Width, sss.Height)
 
-	ui.DrawUpRightCorner(&ui.TextWidget{String: current})
-	ui.DrawCenter(&ui.BoxWidget{
+	sss.Game.Client().DrawUpRightCorner(&ui.TextWidget{String: current})
+	sss.Game.Client().DrawCenter(&ui.BoxWidget{
 		Child: &ui.TextWidget{
 			String:      message,
 			AlignCenter: true,

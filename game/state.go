@@ -1,7 +1,6 @@
 package game
 
 import (
-	"github.com/gdamore/tcell/v2"
 	"github.com/serhatscode/sudoku/board"
 )
 
@@ -13,9 +12,9 @@ import (
 // - What to draw
 type State interface {
 	// OnResize will be invoked when terminal resized
-	OnResize(event *tcell.EventResize)
+	OnResize(width, height int)
 	// OnKeyPress will be invoked when key pressed
-	OnKeyPress(event *tcell.EventKey)
+	OnKeyPress(key string)
 	// Draw will be invoked after every event
 	Draw()
 }

@@ -16,31 +16,29 @@ type menuState struct {
 	Options []menuOption
 }
 
-func (ms *menuState) OnResize(event *tcell.EventResize) {
-	width, height := event.Size()
+func (ms *menuState) OnResize(width, height int) {
 	if width < ms.Game.MinWidth() || height < ms.Game.MinHeight() {
 		ms.Game.PushState(NewSmallSizeState(ms.Game, width, height))
 	}
 }
 
-func (ms *menuState) OnKeyPress(event *tcell.EventKey) {
-	key := event.Key()
-	if key == tcell.KeyESC {
+func (ms *menuState) OnKeyPress(key string) {
+	if key == "esc" {
 		ms.Game.PopState()
 		return
 	}
 
-	if key == tcell.KeyUp {
+	if key == "arrow_up" {
 		ms.Pos = (len(ms.Options) + ms.Pos - 1) % len(ms.Options)
-	} else if key == tcell.KeyDown {
+	} else if key == "arrow_down" {
 		ms.Pos = (ms.Pos + 1) % len(ms.Options)
-	} else if key == tcell.KeyEnter {
+	} else if key == "enter" {
 		ms.Options[ms.Pos].function()
 	}
 }
 
 func (ms *menuState) Draw() {
-	ui.DrawCenter(&ui.BoxWidget{
+	ms.Game.Client().DrawCenter(&ui.BoxWidget{
 		Child: &ui.MenuWidget{
 			Options:          getTitlesFromOptions(ms.Options),
 			CursorIndex:      ms.Pos,
