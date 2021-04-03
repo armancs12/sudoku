@@ -4,6 +4,48 @@ import (
 	"github.com/gdamore/tcell/v2"
 )
 
+type Client interface {
+	// Start starts the client
+	Start() error
+	// Stop stops the client
+	Stop()
+
+	// Size returns width and height of client screen
+	Size() (int, int)
+
+	// OnResize takes a function to run when the screen resized
+	OnResize(func(width, height int))
+	// OnKeyPress takes a function to run when a key pressed
+	OnKeyPress(func(key string))
+
+	// Draw draws the given widget at the given position
+	Draw(x, y int, widget Widget)
+	// Draw draws the given widget at the center of the screen
+	DrawCenter(Widget)
+	// Draw draws the given widget at the up right corner of the screen
+	DrawUpRightCorner(Widget)
+
+	// Context returns context to manipulate the screen
+	Context() Context
+}
+
+type Context interface {
+	// StyleFG sets the current foreground color
+	StyleFG(color string)
+	// StyleBG sets the current background color
+	StyleBG(color string)
+
+	// SetContent draws the given char to the given position
+	// with the current style
+	SetContent(x, y int, char rune)
+
+	// Show makes all content changes visible
+	Show()
+
+	// Clear clears the screen
+	Clear()
+}
+
 // scr to make ui to work
 var scr tcell.Screen
 
