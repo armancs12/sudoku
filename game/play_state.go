@@ -3,7 +3,6 @@ package game
 import (
 	"strconv"
 
-	"github.com/gdamore/tcell/v2"
 	"github.com/serhatscode/sudoku/board"
 	"github.com/serhatscode/sudoku/ui"
 )
@@ -49,11 +48,11 @@ func (ps *playState) Draw() {
 	ps.Game.Client().DrawCenter(&ui.BoardWidget{
 		Board:        ps.Game.Board(),
 		CursorPos:    ps.Pos,
-		CursorBG:     tcell.ColorRed,
-		NumberFG:     tcell.ColorBlack,
-		BorderFG:     tcell.ColorBlack,
-		PredefinedFG: tcell.ColorBlue,
-		ConflictFG:   tcell.ColorRed,
-		Background:   tcell.ColorWhite,
+		CursorBG:     "red",
+		NumberFG:     "black",
+		BorderFG:     "black",
+		PredefinedFG: "blue",
+		ConflictFG:   "red",
+		Background:   "white",
 	})
 }

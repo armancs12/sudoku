@@ -2,8 +2,6 @@ package ui
 
 import (
 	"fmt"
-
-	"github.com/gdamore/tcell/v2"
 )
 
 // MenuWidget is an ui widget for menu representations
@@ -15,22 +13,24 @@ type MenuWidget struct {
 	AlignCenter bool
 	AlignRight  bool
 
-	Color            tcell.Color
-	Background       tcell.Color
-	CursorColor      tcell.Color
-	CursorBackground tcell.Color
+	Color            string
+	Background       string
+	CursorColor      string
+	CursorBackground string
 
 	width int
 }
 
 // Draw draws the menu widget to the terminal
-func (mw *MenuWidget) Draw(screen tcell.Screen, x, y int) {
+func (mw *MenuWidget) Draw(context Context, x, y int) {
 	for i, option := range mw.Options {
-		style := mw.getStyleForOption(i)
+		fg, bg := mw.getStyleForOption(i)
 		option = mw.formatOption(option)
 
+		context.StyleFG(fg)
+		context.StyleBG(bg)
 		for j, char := range []rune(option) {
-			screen.SetContent(x+j, y+i, char, nil, style)
+			context.SetContent(x+j, y+i, char)
 		}
 	}
 }
@@ -54,15 +54,11 @@ func (mw *MenuWidget) Height() int {
 	return len(mw.Options)
 }
 
-func (mw *MenuWidget) getStyleForOption(index int) tcell.Style {
+func (mw *MenuWidget) getStyleForOption(index int) (string, string) {
 	if mw.CursorIndex == index {
-		return tcell.StyleDefault.
-			Background(mw.CursorBackground).
-			Foreground(mw.CursorColor)
+		return mw.CursorColor, mw.CursorBackground
 	}
-	return tcell.StyleDefault.
-		Background(mw.Background).
-		Foreground(mw.Color)
+	return mw.Color, mw.Background
 }
 
 func (mw *MenuWidget) formatOption(option string) string {

@@ -3,7 +3,6 @@ package ui
 import (
 	"fmt"
 
-	"github.com/gdamore/tcell/v2"
 	"github.com/serhatscode/sudoku/board"
 )
 
@@ -36,23 +35,28 @@ var BoardHeight = len(BoardOutline)
 // BoardWidth is width of BoardOutline
 var BoardWidth = len(BoardOutline[0])
 
+type boardColors struct {
+	fg string
+	bg string
+}
+
 // BoardWidget is an ui widget for sudoku board representation
 type BoardWidget struct {
 	Board     board.Board
 	CursorPos board.Point2
 
-	CursorBG     tcell.Color
-	NumberFG     tcell.Color
-	BorderFG     tcell.Color
-	PredefinedFG tcell.Color
-	ConflictFG   tcell.Color
-	Background   tcell.Color
+	CursorBG     string
+	NumberFG     string
+	BorderFG     string
+	PredefinedFG string
+	ConflictFG   string
+	Background   string
 }
 
 // Draw draws the board widget to the terminal
-func (bw *BoardWidget) Draw(screen tcell.Screen, x, y int) {
-	bw.drawBorders(screen, x, y)
-	bw.drawCells(screen, x, y)
+func (bw *BoardWidget) Draw(context Context, x, y int) {
+	bw.drawBorders(context, x, y)
+	bw.drawCells(context, x, y)
 }
 
 // Width returns the width of the board widget
@@ -65,27 +69,26 @@ func (bw *BoardWidget) Height() int {
 	return BoardHeight
 }
 
-func (bw *BoardWidget) drawBorders(screen tcell.Screen, x, y int) {
-	style := tcell.StyleDefault.
-		Background(bw.Background).
-		Foreground(bw.BorderFG)
+func (bw *BoardWidget) drawBorders(context Context, x, y int) {
+	context.StyleFG(bw.BorderFG)
+	context.StyleBG(bw.Background)
 
 	// Horizontal lines
 	for i := 0; i < bw.Height(); i += 2 {
 		for j := 0; j < bw.Width(); j++ {
-			screen.SetContent(x+j, y+i, BoardOutline[i][j], nil, style)
+			context.SetContent(x+j, y+i, BoardOutline[i][j])
 		}
 	}
 
 	// Vertical lines
 	for i := 1; i < bw.Height(); i += 2 {
 		for j := 0; j < bw.Width(); j += 4 {
-			screen.SetContent(x+j, y+i, BoardOutline[i][j], nil, style)
+			context.SetContent(x+j, y+i, BoardOutline[i][j])
 		}
 	}
 }
 
-func (bw *BoardWidget) drawCells(screen tcell.Screen, x, y int) {
+func (bw *BoardWidget) drawCells(context Context, x, y int) {
 	styles := bw.getCellStyles()
 
 	for i := 0; i < board.Size; i++ {
@@ -95,9 +98,12 @@ func (bw *BoardWidget) drawCells(screen tcell.Screen, x, y int) {
 			char := bw.getCellRune(pos)
 			style := *styles[i][j]
 
-			screen.SetContent(x+cx, y+cy, ' ', nil, style)
-			screen.SetContent(x+cx+1, y+cy, char, nil, style)
-			screen.SetContent(x+cx+2, y+cy, ' ', nil, style)
+			context.StyleFG(style.fg)
+			context.StyleBG(style.bg)
+
+			context.SetContent(x+cx, y+cy, ' ')
+			context.SetContent(x+cx+1, y+cy, char)
+			context.SetContent(x+cx+2, y+cy, ' ')
 		}
 	}
 }
@@ -113,14 +119,14 @@ func (bw *BoardWidget) getCellRune(pos board.Point2) rune {
 	return rune(fmt.Sprintf("%v", bw.Board.Get(pos))[0])
 }
 
-func (bw *BoardWidget) getCellStyles() [board.Size][board.Size]*tcell.Style {
-	normal := tcell.StyleDefault.Background(bw.Background).Foreground(bw.NumberFG)
-	predefined := tcell.StyleDefault.Background(bw.Background).Foreground(bw.PredefinedFG)
-	cursor := tcell.StyleDefault.Background(bw.CursorBG).Foreground(bw.NumberFG)
-	conflicts := tcell.StyleDefault.Background(bw.Background).Foreground(bw.ConflictFG)
-	wrong := tcell.StyleDefault.Background(bw.Background).Foreground(bw.ConflictFG)
+func (bw *BoardWidget) getCellStyles() [board.Size][board.Size]*boardColors {
+	normal := boardColors{bw.NumberFG, bw.Background}
+	predefined := boardColors{bw.PredefinedFG, bw.Background}
+	cursor := boardColors{bw.NumberFG, bw.CursorBG}
+	conflicts := boardColors{bw.ConflictFG, bw.Background}
+	wrong := boardColors{bw.ConflictFG, bw.Background}
 
-	styles := [board.Size][board.Size]*tcell.Style{}
+	styles := [board.Size][board.Size]*boardColors{}
 
 	styles[bw.CursorPos.Y][bw.CursorPos.X] = &cursor
 

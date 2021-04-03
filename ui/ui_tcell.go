@@ -74,7 +74,7 @@ func (tc *tcellClient) OnKeyPress(fn func(key string)) {
 }
 
 func (tc *tcellClient) Draw(x, y int, widget Widget) {
-	widget.Draw(tc.context.screen, x, y)
+	widget.Draw(tc.Context(), x, y)
 	tc.context.Show()
 }
 

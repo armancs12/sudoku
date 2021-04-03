@@ -1,9 +1,5 @@
 package ui
 
-import (
-	"github.com/gdamore/tcell/v2"
-)
-
 // BoxWidget is an simple ui wrapper for other widgets
 type BoxWidget struct {
 	Child Widget
@@ -18,36 +14,47 @@ type BoxWidget struct {
 	PaddingRight  int
 
 	Fill       bool
-	Color      tcell.Color
-	Background tcell.Color
+	Color      string
+	Background string
 }
 
+const (
+	RuneULCorner = '┌'
+	RuneURCorner = '┐'
+	RuneLLCorner = '└'
+	RuneLRCorner = '┘'
+	RuneHLine    = '─'
+	RuneVLine    = '│'
+)
+
 // Draw draws the box widget to the terminal
-func (bw *BoxWidget) Draw(screen tcell.Screen, x, y int) {
+func (bw *BoxWidget) Draw(context Context, x, y int) {
 	width := bw.Width() - 1
 	height := bw.Height() - 1
-	style := tcell.StyleDefault.Foreground(bw.Color).Background(bw.Background)
+
+	context.StyleFG(bw.Color)
+	context.StyleBG(bw.Background)
 
 	// Draw corners
-	screen.SetContent(x, y, tcell.RuneULCorner, nil, style)
-	screen.SetContent(x+width, y, tcell.RuneURCorner, nil, style)
-	screen.SetContent(x, y+height, tcell.RuneLLCorner, nil, style)
-	screen.SetContent(x+width, y+height, tcell.RuneLRCorner, nil, style)
+	context.SetContent(x, y, RuneULCorner)
+	context.SetContent(x+width, y, RuneURCorner)
+	context.SetContent(x, y+height, RuneLLCorner)
+	context.SetContent(x+width, y+height, RuneLRCorner)
 
 	// Draw borders
 	for i := x + 1; i < width+x; i++ {
-		screen.SetContent(i, y, tcell.RuneHLine, nil, style)
-		screen.SetContent(i, y+height, tcell.RuneHLine, nil, style)
+		context.SetContent(i, y, RuneHLine)
+		context.SetContent(i, y+height, RuneHLine)
 	}
 	for j := y + 1; j < height+y; j++ {
-		screen.SetContent(x, j, tcell.RuneVLine, nil, style)
-		screen.SetContent(x+width, j, tcell.RuneVLine, nil, style)
+		context.SetContent(x, j, RuneVLine)
+		context.SetContent(x+width, j, RuneVLine)
 	}
 
 	if bw.Fill {
 		for i := x + 1; i < width+x; i++ {
 			for j := y + 1; j < height+y; j++ {
-				screen.SetContent(i, j, ' ', nil, style)
+				context.SetContent(i, j, ' ')
 			}
 		}
 	}
@@ -58,9 +65,9 @@ func (bw *BoxWidget) Draw(screen tcell.Screen, x, y int) {
 		yStart := bw.PaddingTop + y +
 			(bw.Height()-(bw.PaddingTop+bw.PaddingBottom+bw.Child.Height()))/2
 
-		bw.Child.Draw(screen, xStart, yStart)
+		bw.Child.Draw(context, xStart, yStart)
 	} else {
-		bw.Child.Draw(screen, bw.PaddingLeft+x, bw.PaddingTop+y)
+		bw.Child.Draw(context, bw.PaddingLeft+x, bw.PaddingTop+y)
 	}
 }
 

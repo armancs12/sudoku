@@ -3,8 +3,6 @@ package ui
 import (
 	"fmt"
 	"strings"
-
-	"github.com/gdamore/tcell/v2"
 )
 
 // TextWidget is an ui widget for texts
@@ -14,24 +12,23 @@ type TextWidget struct {
 	AlignCenter bool
 	AlignRight  bool
 
-	Color      tcell.Color
-	Background tcell.Color
+	Color      string
+	Background string
 
 	lines []string
 	width int
 }
 
 // Draw draws the text to the terminal
-func (tw *TextWidget) Draw(screen tcell.Screen, x, y int) {
-	style := tcell.StyleDefault.
-		Background(tw.Background).
-		Foreground(tw.Color)
+func (tw *TextWidget) Draw(context Context, x, y int) {
+	context.StyleFG(tw.Color)
+	context.StyleBG(tw.Background)
 
 	for i, line := range tw.getLines() {
 		line = tw.formatString(line)
 		for j, char := range []rune(line) {
 			if char != ' ' {
-				screen.SetContent(x+j, y+i, char, nil, style)
+				context.SetContent(x+j, y+i, char)
 			}
 		}
 	}

@@ -1,7 +1,6 @@
 package game
 
 import (
-	"github.com/gdamore/tcell/v2"
 	"github.com/serhatscode/sudoku/ui"
 )
 
@@ -43,17 +42,17 @@ func (ms *menuState) Draw() {
 			Options:          getTitlesFromOptions(ms.Options),
 			CursorIndex:      ms.Pos,
 			AlignCenter:      true,
-			Color:            tcell.ColorWhite,
-			Background:       tcell.ColorRed,
-			CursorColor:      tcell.ColorWhite,
-			CursorBackground: tcell.ColorBlack,
+			Color:            "white",
+			Background:       "red",
+			CursorColor:      "white",
+			CursorBackground: "black",
 		},
 		PaddingTop:    1,
 		PaddingBottom: 1,
 		PaddingLeft:   1,
 		PaddingRight:  1,
-		Color:         tcell.ColorWhite,
-		Background:    tcell.ColorRed,
+		Color:         "white",
+		Background:    "red",
 	})
 }
 

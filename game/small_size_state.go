@@ -3,7 +3,6 @@ package game
 import (
 	"fmt"
 
-	"github.com/gdamore/tcell/v2"
 	"github.com/serhatscode/sudoku/ui"
 )
 
@@ -33,15 +32,15 @@ func (sss *smallSizeState) Draw() {
 		Child: &ui.TextWidget{
 			String:      message,
 			AlignCenter: true,
-			Color:       tcell.ColorWhite,
-			Background:  tcell.ColorRed,
+			Color:       "white",
+			Background:  "red",
 		},
 		Fill:          true,
 		PaddingTop:    1,
 		PaddingBottom: 1,
 		PaddingLeft:   1,
 		PaddingRight:  1,
-		Color:         tcell.ColorWhite,
-		Background:    tcell.ColorRed,
+		Color:         "white",
+		Background:    "red",
 	})
 }
