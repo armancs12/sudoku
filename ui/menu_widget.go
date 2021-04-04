@@ -8,10 +8,9 @@ import (
 type MenuWidget struct {
 	Options     []string
 	CursorIndex int
-	MinWidth    int
 
-	AlignCenter bool
-	AlignRight  bool
+	HAlign   byte
+	MinWidth int
 
 	Color            string
 	Background       string
@@ -63,11 +62,11 @@ func (mw *MenuWidget) getStyleForOption(index int) (string, string) {
 
 func (mw *MenuWidget) formatOption(option string) string {
 	width := mw.Width()
-	if mw.AlignCenter {
+	if mw.HAlign == HAlignCenter {
 		length := len(option)
 		pad := int((length - width) / 2)
 		return fmt.Sprintf("%*v%v%-*v", pad, "", option, pad, "")
-	} else if mw.AlignRight {
+	} else if mw.HAlign == HAlignEnd {
 		return fmt.Sprintf("%*v", width, option)
 	}
 	return fmt.Sprintf("%-*v", width, option)

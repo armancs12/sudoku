@@ -41,7 +41,7 @@ func (ms *menuState) Draw() {
 		Child: &ui.MenuWidget{
 			Options:          getTitlesFromOptions(ms.Options),
 			CursorIndex:      ms.Pos,
-			AlignCenter:      true,
+			HAlign:           ui.HAlignCenter,
 			Color:            "white",
 			Background:       "red",
 			CursorColor:      "white",

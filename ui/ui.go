@@ -1,5 +1,14 @@
 package ui
 
+const (
+	HAlignStart = byte(iota)
+	HAlignCenter
+	HAlignEnd
+	VAlignStart
+	VAlignCenter
+	VAlignEnd
+)
+
 type Client interface {
 	// Start starts the client
 	Start() error
@@ -17,9 +26,9 @@ type Client interface {
 	// Draw draws the given widget at the given position
 	Draw(x, y int, widget Widget)
 	// Draw draws the given widget at the center of the screen
-	DrawCenter(Widget)
+	DrawCenter(widget Widget)
 	// Draw draws the given widget at the up right corner of the screen
-	DrawUpRightCorner(Widget)
+	DrawAligned(widget Widget, alignments ...byte)
 
 	// Context returns context to manipulate the screen
 	Context() Context

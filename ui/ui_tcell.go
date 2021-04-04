@@ -86,11 +86,29 @@ func (tc *tcellClient) DrawCenter(widget Widget) {
 	tc.Draw(x, y, widget)
 }
 
-func (tc *tcellClient) DrawUpRightCorner(widget Widget) {
-	width, _ := tc.Size()
-	x := width - widget.Width()
+func (tc *tcellClient) DrawAligned(widget Widget, alignments ...byte) {
+	width, height := tc.Size()
+	x := 0
+	y := 0
 
-	tc.Draw(x, 0, widget)
+	for _, alignment := range alignments {
+		switch alignment {
+		case HAlignStart:
+			x = 0
+		case HAlignCenter:
+			x = (width - widget.Width()) / 2
+		case HAlignEnd:
+			x = width - widget.Width()
+		case VAlignStart:
+			y = 0
+		case VAlignCenter:
+			y = (height - widget.Height()) / 2
+		case VAlignEnd:
+			y = height - widget.Height()
+		}
+	}
+
+	tc.Draw(x, y, widget)
 }
 
 func (tc *tcellClient) Context() Context {

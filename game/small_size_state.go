@@ -27,7 +27,7 @@ func (sss *smallSizeState) Draw() {
 		sss.Game.MinWidth(), sss.Game.MinHeight())
 	current := fmt.Sprintf("%dx%d", sss.Width, sss.Height)
 
-	sss.Game.Client().DrawUpRightCorner(&ui.TextWidget{String: current})
+	sss.Game.Client().DrawAligned(&ui.TextWidget{String: current}, ui.HAlignEnd)
 	sss.Game.Client().DrawCenter(&ui.BoxWidget{
 		Child: &ui.TextWidget{
 			String:      message,
