@@ -1,8 +1,6 @@
 package ui
 
 import (
-	"fmt"
-
 	"github.com/serhatscode/sudoku/board"
 )
 
@@ -116,7 +114,8 @@ func (bw *BoardWidget) getCellRune(pos board.Point2) rune {
 	if bw.Board.Get(pos) == 0 {
 		return ' '
 	}
-	return rune(fmt.Sprintf("%v", bw.Board.Get(pos))[0])
+
+	return '0' + rune(bw.Board.Get(pos))
 }
 
 func (bw *BoardWidget) getCellStyles() [board.Size][board.Size]*boardColors {
