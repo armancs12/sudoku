@@ -4,8 +4,14 @@ import (
 	"github.com/serhatscode/sudoku/board"
 )
 
-// BoardOutline for board widget
-var BoardOutline = [][]rune{
+// BoardHeight is height of BoardOutline
+var BoardHeight = len(boardOutline)
+
+// BoardWidth is width of BoardOutline
+var BoardWidth = len(boardOutline[0])
+
+// boardOutline for board widget
+var boardOutline = [][]rune{
 	[]rune("┏━━━┯━━━┯━━━┳━━━┯━━━┯━━━┳━━━┯━━━┯━━━┓"),
 	[]rune("┃   │   │   ┃   │   │   ┃   │   │   ┃"),
 	[]rune("┠───┼───┼───╂───┼───┼───╂───┼───┼───┨"),
@@ -26,12 +32,6 @@ var BoardOutline = [][]rune{
 	[]rune("┃   │   │   ┃   │   │   ┃   │   │   ┃"),
 	[]rune("┗━━━┷━━━┷━━━┻━━━┷━━━┷━━━┻━━━┷━━━┷━━━┛"),
 }
-
-// BoardHeight is height of BoardOutline
-var BoardHeight = len(BoardOutline)
-
-// BoardWidth is width of BoardOutline
-var BoardWidth = len(BoardOutline[0])
 
 type boardColors struct {
 	fg string
@@ -74,14 +74,14 @@ func (bw *BoardWidget) drawBorders(context Context, x, y int) {
 	// Horizontal lines
 	for i := 0; i < bw.Height(); i += 2 {
 		for j := 0; j < bw.Width(); j++ {
-			context.SetContent(x+j, y+i, BoardOutline[i][j])
+			context.SetContent(x+j, y+i, boardOutline[i][j])
 		}
 	}
 
 	// Vertical lines
 	for i := 1; i < bw.Height(); i += 2 {
 		for j := 0; j < bw.Width(); j += 4 {
-			context.SetContent(x+j, y+i, BoardOutline[i][j])
+			context.SetContent(x+j, y+i, boardOutline[i][j])
 		}
 	}
 }

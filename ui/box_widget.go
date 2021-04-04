@@ -19,12 +19,12 @@ type BoxWidget struct {
 }
 
 const (
-	RuneULCorner = '┌'
-	RuneURCorner = '┐'
-	RuneLLCorner = '└'
-	RuneLRCorner = '┘'
-	RuneHLine    = '─'
-	RuneVLine    = '│'
+	runeULCorner = '┌'
+	runeURCorner = '┐'
+	runeLLCorner = '└'
+	runeLRCorner = '┘'
+	runeHLine    = '─'
+	runeVLine    = '│'
 )
 
 // Draw draws the box widget to the terminal
@@ -36,19 +36,19 @@ func (bw *BoxWidget) Draw(context Context, x, y int) {
 	context.StyleBG(bw.Background)
 
 	// Draw corners
-	context.SetContent(x, y, RuneULCorner)
-	context.SetContent(x+width, y, RuneURCorner)
-	context.SetContent(x, y+height, RuneLLCorner)
-	context.SetContent(x+width, y+height, RuneLRCorner)
+	context.SetContent(x, y, runeULCorner)
+	context.SetContent(x+width, y, runeURCorner)
+	context.SetContent(x, y+height, runeLLCorner)
+	context.SetContent(x+width, y+height, runeLRCorner)
 
 	// Draw borders
 	for i := x + 1; i < width+x; i++ {
-		context.SetContent(i, y, RuneHLine)
-		context.SetContent(i, y+height, RuneHLine)
+		context.SetContent(i, y, runeHLine)
+		context.SetContent(i, y+height, runeHLine)
 	}
 	for j := y + 1; j < height+y; j++ {
-		context.SetContent(x, j, RuneVLine)
-		context.SetContent(x+width, j, RuneVLine)
+		context.SetContent(x, j, runeVLine)
+		context.SetContent(x+width, j, runeVLine)
 	}
 
 	if bw.Fill {
