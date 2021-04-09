@@ -1,6 +1,8 @@
 package ui
 
-import "github.com/gdamore/tcell/v2"
+import (
+	"github.com/gdamore/tcell/v2"
+)
 
 func NewTCellClient() (Client, error) {
 	screen, err := tcell.NewScreen()
@@ -125,11 +127,11 @@ type tcellContext struct {
 }
 
 func (tc *tcellContext) StyleFG(color string) {
-	tc.style.Foreground(tcell.GetColor(color))
+	tc.style = tc.style.Foreground(tcell.GetColor(color))
 }
 
 func (tc *tcellContext) StyleBG(color string) {
-	tc.style.Background(tcell.GetColor(color))
+	tc.style = tc.style.Background(tcell.GetColor(color))
 }
 
 func (tc *tcellContext) SetContent(x, y int, char rune) {
