@@ -46,13 +46,8 @@ func (ps *playState) OnKeyPress(key string) {
 
 func (ps *playState) Draw() {
 	ps.Game.Client().DrawCenter(&ui.BoardWidget{
-		Board:        ps.Game.Board(),
-		CursorPos:    ps.Pos,
-		CursorBG:     "red",
-		NumberFG:     "black",
-		BorderFG:     "black",
-		PredefinedFG: "blue",
-		ConflictFG:   "red",
-		Background:   "white",
+		Board:     ps.Game.Board(),
+		CursorPos: ps.Pos,
+		Theme:     ps.Game.Theme().Board,
 	})
 }

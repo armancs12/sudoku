@@ -5,13 +5,13 @@ import "github.com/serhatscode/sudoku/ui"
 func DefaultTheme() Theme {
 	return Theme{
 		Name: "Default",
-		Board: BoardTheme{
+		Board: ui.BoardTheme{
 			Cursor: "#f9da75",
 			Border: ui.ColorPair{
 				FG: "#344861",
 				BG: "#ffffff",
 			},
-			Cells: BoardCellColors{
+			Cells: ui.BoardCellsTheme{
 				Normal: ui.ColorPair{
 					FG: "black",
 					BG: "#ffffff",
@@ -59,22 +59,9 @@ func DefaultTheme() Theme {
 
 type Theme struct {
 	Name    string
-	Board   BoardTheme
+	Board   ui.BoardTheme
 	Menu    MenuTheme
 	Warning WarningTheme
-}
-
-type BoardTheme struct {
-	Cursor string
-	Border ui.ColorPair
-	Cells  BoardCellColors
-}
-
-type BoardCellColors struct {
-	Normal     ui.ColorPair
-	Predefined ui.ColorPair
-	Conflict   ui.ColorPair
-	Wrong      ui.ColorPair
 }
 
 type MenuTheme struct {

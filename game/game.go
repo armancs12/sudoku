@@ -16,6 +16,11 @@ type Game interface {
 	// SetBoard sets the current sudoku board
 	SetBoard(board board.Board)
 
+	// Theme returns the current theme
+	Theme() Theme
+	// SetTheme sets current theme to the given theme
+	SetTheme(theme Theme)
+
 	// MinWidth returns minimum terminal width
 	// required to run the game
 	MinWidth() int
@@ -44,6 +49,7 @@ func NewGame(client ui.Client) (Game, error) {
 		minWidth:     ui.BoardWidth,
 		minHeight:    ui.BoardHeight,
 		stateManager: stateManager{},
+		theme:        DefaultTheme(),
 	}
 
 	game.stateManager.Push(NewPlayState(game))
@@ -55,6 +61,7 @@ type game struct {
 	board        board.Board
 	stateManager stateManager
 	client       ui.Client
+	theme        Theme
 
 	minWidth, minHeight int
 }
@@ -96,6 +103,14 @@ func (game *game) SetBoard(board board.Board) {
 
 func (game *game) Client() ui.Client {
 	return game.client
+}
+
+func (game *game) Theme() Theme {
+	return game.theme
+}
+
+func (game *game) SetTheme(theme Theme) {
+	game.theme = theme
 }
 
 func (game *game) State() State {

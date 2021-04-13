@@ -32,15 +32,13 @@ func (sss *smallSizeState) Draw() {
 		Child: &ui.TextWidget{
 			String:      message,
 			AlignCenter: true,
-			Color:       "white",
-			Background:  "red",
+			Color:       sss.Game.Theme().Warning.Text,
 		},
 		Fill:          true,
 		PaddingTop:    1,
 		PaddingBottom: 1,
 		PaddingLeft:   1,
 		PaddingRight:  1,
-		Color:         "white",
-		Background:    "red",
+		Color:         sss.Game.Theme().Warning.Box,
 	})
 }

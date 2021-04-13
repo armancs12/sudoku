@@ -13,9 +13,8 @@ type BoxWidget struct {
 	PaddingLeft   int
 	PaddingRight  int
 
-	Fill       bool
-	Color      string
-	Background string
+	Fill  bool
+	Color ColorPair
 }
 
 const (
@@ -32,8 +31,8 @@ func (bw *BoxWidget) Draw(context Context, x, y int) {
 	width := bw.Width() - 1
 	height := bw.Height() - 1
 
-	context.StyleFG(bw.Color)
-	context.StyleBG(bw.Background)
+	context.StyleFG(bw.Color.FG)
+	context.StyleBG(bw.Color.BG)
 
 	// Draw corners
 	context.SetContent(x, y, runeULCorner)

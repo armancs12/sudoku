@@ -12,10 +12,8 @@ type MenuWidget struct {
 	HAlign   byte
 	MinWidth int
 
-	Color            string
-	Background       string
-	CursorColor      string
-	CursorBackground string
+	Color  ColorPair
+	Cursor ColorPair
 
 	width int
 }
@@ -55,9 +53,9 @@ func (mw *MenuWidget) Height() int {
 
 func (mw *MenuWidget) getStyleForOption(index int) (string, string) {
 	if mw.CursorIndex == index {
-		return mw.CursorColor, mw.CursorBackground
+		return mw.Cursor.FG, mw.Cursor.BG
 	}
-	return mw.Color, mw.Background
+	return mw.Color.FG, mw.Color.BG
 }
 
 func (mw *MenuWidget) formatOption(option string) string {

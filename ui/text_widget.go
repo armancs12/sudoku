@@ -12,8 +12,7 @@ type TextWidget struct {
 	AlignCenter bool
 	AlignRight  bool
 
-	Color      string
-	Background string
+	Color ColorPair
 
 	lines []string
 	width int
@@ -21,8 +20,8 @@ type TextWidget struct {
 
 // Draw draws the text to the terminal
 func (tw *TextWidget) Draw(context Context, x, y int) {
-	context.StyleFG(tw.Color)
-	context.StyleBG(tw.Background)
+	context.StyleFG(tw.Color.FG)
+	context.StyleBG(tw.Color.BG)
 
 	for i, line := range tw.getLines() {
 		line = tw.formatString(line)

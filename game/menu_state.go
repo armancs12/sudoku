@@ -39,20 +39,17 @@ func (ms *menuState) OnKeyPress(key string) {
 func (ms *menuState) Draw() {
 	ms.Game.Client().DrawCenter(&ui.BoxWidget{
 		Child: &ui.MenuWidget{
-			Options:          getTitlesFromOptions(ms.Options),
-			CursorIndex:      ms.Pos,
-			HAlign:           ui.HAlignCenter,
-			Color:            "white",
-			Background:       "red",
-			CursorColor:      "white",
-			CursorBackground: "black",
+			Options:     getTitlesFromOptions(ms.Options),
+			CursorIndex: ms.Pos,
+			HAlign:      ui.HAlignCenter,
+			Color:       ms.Game.Theme().Menu.Color,
+			Cursor:      ms.Game.Theme().Menu.Cursor,
 		},
 		PaddingTop:    1,
 		PaddingBottom: 1,
 		PaddingLeft:   1,
 		PaddingRight:  1,
-		Color:         "white",
-		Background:    "red",
+		Color:         ms.Game.Theme().Menu.Box,
 	})
 }
 

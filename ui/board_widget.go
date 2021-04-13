@@ -33,22 +33,24 @@ var boardOutline = [][]rune{
 	[]rune("┗━━━┷━━━┷━━━┻━━━┷━━━┷━━━┻━━━┷━━━┷━━━┛"),
 }
 
-type boardColors struct {
-	fg string
-	bg string
-}
-
 // BoardWidget is an ui widget for sudoku board representation
 type BoardWidget struct {
 	Board     board.Board
 	CursorPos board.Point2
+	Theme     BoardTheme
+}
 
-	CursorBG     string
-	NumberFG     string
-	BorderFG     string
-	PredefinedFG string
-	ConflictFG   string
-	Background   string
+type BoardTheme struct {
+	Cursor string
+	Border ColorPair
+	Cells  BoardCellsTheme
+}
+
+type BoardCellsTheme struct {
+	Normal     ColorPair
+	Predefined ColorPair
+	Conflict   ColorPair
+	Wrong      ColorPair
 }
 
 // Draw draws the board widget to the terminal
@@ -68,8 +70,8 @@ func (bw *BoardWidget) Height() int {
 }
 
 func (bw *BoardWidget) drawBorders(context Context, x, y int) {
-	context.StyleFG(bw.BorderFG)
-	context.StyleBG(bw.Background)
+	context.StyleFG(bw.Theme.Border.FG)
+	context.StyleBG(bw.Theme.Border.BG)
 
 	// Horizontal lines
 	for i := 0; i < bw.Height(); i += 2 {
@@ -96,8 +98,8 @@ func (bw *BoardWidget) drawCells(context Context, x, y int) {
 			char := bw.getCellRune(pos)
 			style := *styles[i][j]
 
-			context.StyleFG(style.fg)
-			context.StyleBG(style.bg)
+			context.StyleFG(style.FG)
+			context.StyleBG(style.BG)
 
 			context.SetContent(x+cx, y+cy, ' ')
 			context.SetContent(x+cx+1, y+cy, char)
@@ -118,22 +120,14 @@ func (bw *BoardWidget) getCellRune(pos board.Point2) rune {
 	return '0' + rune(bw.Board.Get(pos))
 }
 
-func (bw *BoardWidget) getCellStyles() [board.Size][board.Size]*boardColors {
-	normal := boardColors{bw.NumberFG, bw.Background}
-	predefined := boardColors{bw.PredefinedFG, bw.Background}
-	cursor := boardColors{bw.NumberFG, bw.CursorBG}
-	conflicts := boardColors{bw.ConflictFG, bw.Background}
-	wrong := boardColors{bw.ConflictFG, bw.Background}
-
-	styles := [board.Size][board.Size]*boardColors{}
-
-	styles[bw.CursorPos.Y][bw.CursorPos.X] = &cursor
+func (bw *BoardWidget) getCellStyles() [board.Size][board.Size]*ColorPair {
+	styles := [board.Size][board.Size]*ColorPair{}
 
 	// Set conflict style
 	value := bw.Board.Get(bw.CursorPos)
 	if value != 0 {
 		for conflict := range bw.Board.GetConflicts(bw.CursorPos, value) {
-			styles[conflict.Y][conflict.X] = &conflicts
+			styles[conflict.Y][conflict.X] = &bw.Theme.Cells.Conflict
 		}
 	}
 
@@ -146,13 +140,20 @@ func (bw *BoardWidget) getCellStyles() [board.Size][board.Size]*boardColors {
 
 			pos := board.Point2{X: j, Y: i}
 			if bw.Board.IsPredefined(pos) {
-				styles[pos.Y][pos.X] = &predefined
+				styles[pos.Y][pos.X] = &bw.Theme.Cells.Predefined
 			} else if bw.Board.Get(pos) != 0 && !bw.Board.IsCorrect(pos) {
-				styles[pos.Y][pos.X] = &wrong
+				styles[pos.Y][pos.X] = &bw.Theme.Cells.Wrong
 			} else {
-				styles[pos.Y][pos.X] = &normal
+				styles[pos.Y][pos.X] = &bw.Theme.Cells.Normal
 			}
 		}
 	}
+
+	// Set cursor style
+	styles[bw.CursorPos.Y][bw.CursorPos.X] = &ColorPair{
+		FG: styles[bw.CursorPos.Y][bw.CursorPos.X].FG,
+		BG: bw.Theme.Cursor,
+	}
+
 	return styles
 }
