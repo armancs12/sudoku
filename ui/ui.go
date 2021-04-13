@@ -9,6 +9,11 @@ const (
 	VAlignEnd
 )
 
+type ColorPair struct {
+	FG string
+	BG string
+}
+
 type Client interface {
 	// Start starts the client
 	Start() error
