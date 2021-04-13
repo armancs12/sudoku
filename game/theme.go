@@ -30,47 +30,35 @@ func DefaultTheme() Theme {
 				},
 			},
 		},
-		Menu: MenuTheme{
-			Color: ui.ColorPair{
-				FG: "#ffffff",
-				BG: "#fb3d3f",
-			},
-			Cursor: ui.ColorPair{
-				FG: "black",
-				BG: "#ffffff",
-			},
-			Box: ui.ColorPair{
-				FG: "#ffffff",
-				BG: "#fb3d3f",
-			},
+		Menu: ui.ColorPair{
+			FG: "#ffffff",
+			BG: "#fb3d3f",
 		},
-		Warning: WarningTheme{
-			Text: ui.ColorPair{
-				FG: "#ffffff",
-				BG: "#fb3d3f",
-			},
-			Box: ui.ColorPair{
-				FG: "#ffffff",
-				BG: "#fb3d3f",
-			},
+		MenuCursor: ui.ColorPair{
+			FG: "black",
+			BG: "#ffffff",
+		},
+		MenuBox: ui.ColorPair{
+			FG: "#ffffff",
+			BG: "#fb3d3f",
+		},
+		WarningText: ui.ColorPair{
+			FG: "#ffffff",
+			BG: "#fb3d3f",
+		},
+		WarningBox: ui.ColorPair{
+			FG: "#ffffff",
+			BG: "#fb3d3f",
 		},
 	}
 }
 
 type Theme struct {
-	Name    string
-	Board   ui.BoardTheme
-	Menu    MenuTheme
-	Warning WarningTheme
-}
-
-type MenuTheme struct {
-	Color  ui.ColorPair
-	Cursor ui.ColorPair
-	Box    ui.ColorPair
-}
-
-type WarningTheme struct {
-	Box  ui.ColorPair
-	Text ui.ColorPair
+	Name        string
+	Board       ui.BoardTheme
+	Menu        ui.ColorPair
+	MenuCursor  ui.ColorPair
+	MenuBox     ui.ColorPair
+	WarningText ui.ColorPair
+	WarningBox  ui.ColorPair
 }

@@ -42,14 +42,14 @@ func (ms *menuState) Draw() {
 			Options:     getTitlesFromOptions(ms.Options),
 			CursorIndex: ms.Pos,
 			HAlign:      ui.HAlignCenter,
-			Color:       ms.Game.Theme().Menu.Color,
-			Cursor:      ms.Game.Theme().Menu.Cursor,
+			Color:       ms.Game.Theme().Menu,
+			Cursor:      ms.Game.Theme().MenuCursor,
 		},
 		PaddingTop:    1,
 		PaddingBottom: 1,
 		PaddingLeft:   1,
 		PaddingRight:  1,
-		Color:         ms.Game.Theme().Menu.Box,
+		Color:         ms.Game.Theme().MenuBox,
 	})
 }
 
