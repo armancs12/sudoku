@@ -68,6 +68,7 @@ type game struct {
 
 func (game *game) Start() error {
 	game.client.OnResize(func(width, height int) {
+		game.client.Context().Clear()
 		game.State().OnResize(width, height)
 		game.State().Draw()
 	})
@@ -77,6 +78,7 @@ func (game *game) Start() error {
 			game.Exit()
 		}
 
+		game.client.Context().Clear()
 		game.State().OnKeyPress(key)
 		game.State().Draw()
 	})
