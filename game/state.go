@@ -46,10 +46,36 @@ func NewMenuState(game Game) State {
 				game.SetBoard(board.New(board.Medium))
 				game.PopState()
 			}},
+			{"Themes", func() {
+				themes, err := LoadThemes()
+				if err != nil {
+					return
+				}
+
+				game.PushState(NewThemesMenuState(game, themes))
+			}},
 			{"Exit", func() {
 				game.Exit()
 
 			}},
 		},
+	}
+}
+
+func NewThemesMenuState(game Game, themes []Theme) State {
+	themeOptions := []menuOption{}
+	for _, theme := range themes {
+		themeOptions = append(themeOptions, menuOption{
+			title: theme.Name,
+			function: func() {
+				game.SetTheme(theme)
+				game.PopState()
+			},
+		})
+	}
+
+	return &menuState{
+		Game:    game,
+		Options: themeOptions,
 	}
 }
