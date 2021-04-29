@@ -36,6 +36,9 @@ type Game interface {
 	// PushState sets the current game state
 	// without replacing the previous one
 	PushState(state State)
+	// ChangeState sets the current state
+	// to the given one
+	ChangeState(state State)
 	// PopState returns the current state and
 	// sets the game state back to the previous state
 	PopState() State
@@ -44,24 +47,24 @@ type Game interface {
 // NewGame returns a new game instance
 func NewGame(client ui.Client) (Game, error) {
 	game := &game{
-		board:        board.New(board.Medium),
-		client:       client,
-		minWidth:     ui.BoardWidth,
-		minHeight:    ui.BoardHeight,
-		stateManager: stateManager{},
-		theme:        DefaultTheme(),
+		board:     board.New(board.Medium),
+		client:    client,
+		states:    []State{},
+		minWidth:  ui.BoardWidth,
+		minHeight: ui.BoardHeight,
+		theme:     DefaultTheme(),
 	}
 
-	game.stateManager.Push(NewPlayState(game))
+	game.PushState(NewPlayState(game))
 
 	return game, nil
 }
 
 type game struct {
-	board        board.Board
-	stateManager stateManager
-	client       ui.Client
-	theme        Theme
+	board  board.Board
+	states []State
+	client ui.Client
+	theme  Theme
 
 	minWidth, minHeight int
 }
@@ -116,15 +119,21 @@ func (game *game) SetTheme(theme Theme) {
 }
 
 func (game *game) State() State {
-	return game.stateManager.Get()
+	return game.states[len(game.states)-1]
 }
 
 func (game *game) PushState(state State) {
-	game.stateManager.Push(state)
+	game.states = append(game.states, state)
+}
+
+func (game *game) ChangeState(state State) {
+	game.states[len(game.states)-1] = state
 }
 
 func (game *game) PopState() State {
-	return game.stateManager.Pop()
+	state := game.State()
+	game.states = game.states[:len(game.states)-1]
+	return state
 }
 
 func (game *game) MinWidth() int {
@@ -133,30 +142,4 @@ func (game *game) MinWidth() int {
 
 func (game *game) MinHeight() int {
 	return game.minHeight
-}
-
-// StateManager is an array of states
-type stateManager []State
-
-// Get returns the current game state
-// which is the last element of the array
-func (sm *stateManager) Get() State {
-	if len(*sm) > 0 {
-		return (*sm)[len(*sm)-1]
-	}
-	return nil
-}
-
-// Push appends the given state
-func (sm *stateManager) Push(state State) {
-	*sm = append(*sm, state)
-}
-
-// Pop removes the last element
-func (sm *stateManager) Pop() State {
-	state := sm.Get()
-	if len(*sm) > 0 {
-		*sm = (*sm)[:len(*sm)-1]
-	}
-	return state
 }
