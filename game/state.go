@@ -65,6 +65,8 @@ func NewMenuState(game Game) State {
 func NewThemesMenuState(game Game, themes []Theme) State {
 	themeOptions := []menuOption{}
 	for _, theme := range themes {
+		theme := theme
+
 		themeOptions = append(themeOptions, menuOption{
 			title: theme.Name,
 			function: func() {

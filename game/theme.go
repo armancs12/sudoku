@@ -2,7 +2,6 @@ package game
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 	"path"
 
@@ -90,15 +89,11 @@ func LoadThemes() ([]Theme, error) {
 		return nil, err
 	}
 
-	fmt.Println(themesDir)
-
 	themes := []Theme{DefaultTheme()}
 	for _, file := range files {
 		if file.IsDir() {
 			continue
 		}
-
-		fmt.Println(file.Name())
 
 		body, err := os.ReadFile(path.Join(themesDir, file.Name()))
 		if err != nil {
