@@ -41,16 +41,16 @@ type BoardWidget struct {
 }
 
 type BoardTheme struct {
-	Cursor string
-	Border ColorPair
-	Cells  BoardCellsTheme
+	Cursor string          `json:"cursor"`
+	Border ColorPair       `json:"border"`
+	Cells  BoardCellsTheme `json:"cells"`
 }
 
 type BoardCellsTheme struct {
-	Normal     ColorPair
-	Predefined ColorPair
-	Conflict   ColorPair
-	Wrong      ColorPair
+	Normal     ColorPair `json:"normal"`
+	Predefined ColorPair `json:"predefined"`
+	Conflict   ColorPair `json:"conflict"`
+	Wrong      ColorPair `json:"wrong"`
 }
 
 // Draw draws the board widget to the terminal

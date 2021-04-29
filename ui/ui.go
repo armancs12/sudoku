@@ -10,8 +10,8 @@ const (
 )
 
 type ColorPair struct {
-	FG string
-	BG string
+	FG string `json:"fg"`
+	BG string `json:"bg"`
 }
 
 type Client interface {

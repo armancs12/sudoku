@@ -1,6 +1,23 @@
 package game
 
-import "github.com/serhatscode/sudoku/ui"
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+	"path"
+
+	"github.com/serhatscode/sudoku/ui"
+)
+
+type Theme struct {
+	Name        string        `json:"name"`
+	Board       ui.BoardTheme `json:"board"`
+	Menu        ui.ColorPair  `json:"menu"`
+	MenuCursor  ui.ColorPair  `json:"menu_cursor"`
+	MenuBox     ui.ColorPair  `json:"menu_box"`
+	WarningText ui.ColorPair  `json:"warning_text"`
+	WarningBox  ui.ColorPair  `json:"warning_box"`
+}
 
 func DefaultTheme() Theme {
 	return Theme{
@@ -53,12 +70,55 @@ func DefaultTheme() Theme {
 	}
 }
 
-type Theme struct {
-	Name        string
-	Board       ui.BoardTheme
-	Menu        ui.ColorPair
-	MenuCursor  ui.ColorPair
-	MenuBox     ui.ColorPair
-	WarningText ui.ColorPair
-	WarningBox  ui.ColorPair
+func CreateThemesFolder() (string, error) {
+	themesDir, err := getThemesFolder()
+	if err != nil {
+		return "", err
+	}
+
+	return themesDir, os.MkdirAll(themesDir, os.ModePerm)
+}
+
+func LoadThemes() ([]Theme, error) {
+	themesDir, err := CreateThemesFolder()
+	if err != nil {
+		return nil, err
+	}
+
+	files, err := os.ReadDir(themesDir)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println(themesDir)
+
+	themes := []Theme{DefaultTheme()}
+	for _, file := range files {
+		if file.IsDir() {
+			continue
+		}
+
+		fmt.Println(file.Name())
+
+		body, err := os.ReadFile(path.Join(themesDir, file.Name()))
+		if err != nil {
+			continue
+		}
+
+		theme := Theme{}
+		json.Unmarshal(body, &theme)
+
+		themes = append(themes, theme)
+	}
+
+	return themes, nil
+}
+
+func getThemesFolder() (string, error) {
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		return "", err
+	}
+
+	return path.Join(configDir, "sudoku", "themes"), nil
 }
