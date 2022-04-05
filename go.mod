@@ -1,4 +1,4 @@
-module github.com/serhatscode/sudoku
+module github.com/serhatsdev/sudoku
 
 go 1.15
 

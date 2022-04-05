@@ -1,8 +1,8 @@
 package game
 
 import (
-	"github.com/serhatscode/sudoku/board"
-	"github.com/serhatscode/sudoku/ui"
+	"github.com/serhatsdev/sudoku/board"
+	"github.com/serhatsdev/sudoku/ui"
 )
 
 type Game interface {

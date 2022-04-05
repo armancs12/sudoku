@@ -5,7 +5,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/serhatscode/sudoku/ui"
+	"github.com/serhatsdev/sudoku/ui"
 )
 
 type Theme struct {

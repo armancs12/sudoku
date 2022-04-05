@@ -3,7 +3,7 @@ package game
 import (
 	"fmt"
 
-	"github.com/serhatscode/sudoku/ui"
+	"github.com/serhatsdev/sudoku/ui"
 )
 
 type smallSizeState struct {

@@ -1,7 +1,7 @@
 package ui
 
 import (
-	"github.com/serhatscode/sudoku/board"
+	"github.com/serhatsdev/sudoku/board"
 )
 
 // BoardHeight is height of BoardOutline

@@ -1,7 +1,7 @@
 package game
 
 import (
-	"github.com/serhatscode/sudoku/ui"
+	"github.com/serhatsdev/sudoku/ui"
 )
 
 type menuOption struct {

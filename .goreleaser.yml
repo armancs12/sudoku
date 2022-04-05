@@ -18,7 +18,7 @@ builds:
 nfpms:
   - license: MIT
     maintainer: Serhat S <serhats@tutamail.com>
-    homepage: https://github.com/serhatscode/sudoku
+    homepage: https://github.com/serhatsdev/sudoku
     description: "🧩 Play sudoku on your terminal!"
     formats:
       - rpm

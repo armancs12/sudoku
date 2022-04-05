@@ -3,7 +3,7 @@ package board_test
 import (
 	"testing"
 
-	"github.com/serhatscode/sudoku/board"
+	"github.com/serhatsdev/sudoku/board"
 )
 
 func TestSolveBoard(t *testing.T) {

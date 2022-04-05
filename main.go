@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/serhatscode/sudoku/game"
-	"github.com/serhatscode/sudoku/ui"
+	"github.com/serhatsdev/sudoku/game"
+	"github.com/serhatsdev/sudoku/ui"
 )
 
 func main() {
