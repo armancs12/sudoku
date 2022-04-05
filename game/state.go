@@ -1,7 +1,7 @@
 package game
 
 import (
-	"github.com/serhatsdev/sudoku/board"
+	"github.com/serhatsdev/sudoku/game/board"
 )
 
 // State is an interface for game states

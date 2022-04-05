@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/serhatsdev/sudoku/game"
-	"github.com/serhatsdev/sudoku/ui"
+	"github.com/serhatsdev/sudoku/game/ui"
 )
 
 func main() {

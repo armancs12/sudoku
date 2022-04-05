@@ -3,8 +3,8 @@ package game
 import (
 	"strconv"
 
-	"github.com/serhatsdev/sudoku/board"
-	"github.com/serhatsdev/sudoku/ui"
+	"github.com/serhatsdev/sudoku/game/board"
+	"github.com/serhatsdev/sudoku/game/ui"
 )
 
 type playState struct {
