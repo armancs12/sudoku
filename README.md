@@ -18,7 +18,7 @@
     </a>
   </p>
   <p align="center"> Play sudoku on your terminal! </p>
-  <p align="center"> <img src="images/screenshot.png" /> </p>
+  <p align="center"> <img src="docs/images/screenshot.png" /> </p>
 </div>
 
 ## Introduction
