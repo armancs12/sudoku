@@ -5,9 +5,6 @@ import (
 	"time"
 )
 
-// Size of board
-const Size = 9
-
 // Board Difficulty
 const (
 	Beginner = byte(20)
@@ -17,19 +14,16 @@ const (
 	VeryHard = byte(60)
 )
 
-// Value is a cell value in a sudoku board
-type Value int
-
 // Point2 is a position in a 2d array
 type Point2 struct{ X, Y int }
 
 // Board is an interface for a sudoku board
 type Board interface {
 	// Get returns the cell value at the given position
-	Get(pos Point2) Value
+	Get(pos Point2) int
 
 	// Set sets the cell value at the given position
-	Set(pos Point2, value Value)
+	Set(pos Point2, value int)
 
 	// IsPredefined returns if the cell value is defined by system
 	IsPredefined(pos Point2) bool
@@ -39,39 +33,38 @@ type Board interface {
 
 	// GetConflicts returns positions of cells that has the given value
 	// in row, column and subsquare of the given position
-	GetConflicts(pos Point2, value Value) map[Point2]struct{}
+	GetConflicts(pos Point2, value int) map[Point2]struct{}
 
 	// GetPositions returns positions of cells
 	// that has the given value in complete board
-	GetPositions(value Value) map[Point2]struct{}
+	GetPositions(value int) map[Point2]struct{}
 }
 
 // New returns a new board instance
 func New(difficulty byte) Board {
-	firstRow := randomRow()
-	complete, _ := Solve(&[Size][Size]Value{firstRow})
-	grid := *complete
+	complete := GenerateGrid()
+	incomplete := *&complete
 
 	for difficulty > 0 {
 		pos := randomPos()
-		if grid[pos.Y][pos.X] != 0 {
-			grid[pos.Y][pos.X] = 0
+		if incomplete[pos.Y][pos.X] != 0 {
+			incomplete[pos.Y][pos.X] = 0
 			difficulty--
 		}
 	}
 
-	return NewCustom(grid, *complete)
+	return NewCustom(incomplete, complete)
 }
 
 // NewCustom returns a new board instance with custom values
-func NewCustom(grid [Size][Size]Value, complete [Size][Size]Value) Board {
+func NewCustom(incomplete Grid, complete Grid) Board {
 	board := &board{}
 
 	for i := 0; i < Size; i++ {
 		for j := 0; j < Size; j++ {
 			board[i][j] = cell{
-				value:      grid[i][j],
-				predefined: grid[i][j] != 0,
+				value:      incomplete[i][j],
+				predefined: incomplete[i][j] != 0,
 				correct:    complete[i][j],
 			}
 		}
@@ -81,18 +74,18 @@ func NewCustom(grid [Size][Size]Value, complete [Size][Size]Value) Board {
 }
 
 type cell struct {
-	value      Value
+	value      int
 	predefined bool
-	correct    Value
+	correct    int
 }
 
 type board [Size][Size]cell
 
-func (board *board) Get(pos Point2) Value {
+func (board *board) Get(pos Point2) int {
 	return board[pos.Y][pos.X].value
 }
 
-func (board *board) Set(pos Point2, value Value) {
+func (board *board) Set(pos Point2, value int) {
 	if !board.IsPredefined(pos) {
 		board[pos.Y][pos.X].value = value
 	}
@@ -106,7 +99,7 @@ func (board *board) IsCorrect(pos Point2) bool {
 	return board.Get(pos) == board[pos.Y][pos.X].correct
 }
 
-func (board *board) GetConflicts(pos Point2, value Value) map[Point2]struct{} {
+func (board *board) GetConflicts(pos Point2, value int) map[Point2]struct{} {
 	values := map[Point2]struct{}{}
 
 	// check row
@@ -143,7 +136,7 @@ func (board *board) GetConflicts(pos Point2, value Value) map[Point2]struct{} {
 	return values
 }
 
-func (board *board) GetPositions(value Value) map[Point2]struct{} {
+func (board *board) GetPositions(value int) map[Point2]struct{} {
 	values := map[Point2]struct{}{}
 
 	for i := 0; i < Size; i++ {
@@ -156,18 +149,6 @@ func (board *board) GetPositions(value Value) map[Point2]struct{} {
 	}
 
 	return values
-}
-
-// randomRow returns a randomly shuffled row
-func randomRow() [Size]Value {
-	row := [Size]Value{1, 2, 3, 4, 5, 6, 7, 8, 9}
-
-	rand.Seed(time.Now().UnixNano())
-	rand.Shuffle(9, func(i, j int) {
-		row[i], row[j] = row[j], row[i]
-	})
-
-	return row
 }
 
 // randomPos returns a random position on the board

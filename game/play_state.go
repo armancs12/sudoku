@@ -38,7 +38,7 @@ func (ps *playState) OnKeyPress(key string) {
 		} else {
 			num, err := strconv.Atoi(key)
 			if err == nil && num > 0 && num < 10 {
-				ps.Game.Board().Set(ps.Pos, board.Value(num))
+				ps.Game.Board().Set(ps.Pos, num)
 			}
 		}
 	}

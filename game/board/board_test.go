@@ -8,7 +8,7 @@ import (
 
 func getBoard() board.Board {
 	return board.NewCustom(
-		[9][9]board.Value{
+		board.Grid{
 			{0, 2, 0, 0, 9, 0, 5, 8, 0},
 			{7, 5, 0, 8, 4, 0, 9, 3, 2},
 			{8, 0, 9, 1, 2, 0, 0, 4, 0},
@@ -19,7 +19,7 @@ func getBoard() board.Board {
 			{2, 1, 8, 5, 0, 9, 0, 0, 4},
 			{3, 4, 0, 0, 0, 8, 7, 2, 0},
 		},
-		[9][9]board.Value{
+		board.Grid{
 			{6, 2, 4, 7, 9, 3, 5, 8, 1},
 			{7, 5, 1, 8, 4, 6, 9, 3, 2},
 			{8, 3, 9, 1, 2, 5, 6, 4, 7},
@@ -60,7 +60,7 @@ func TestGet(t *testing.T) {
 
 	tests := []struct {
 		pos      board.Point2
-		expected board.Value
+		expected int
 	}{
 		{
 			pos:      board.Point2{0, 0},
@@ -98,8 +98,8 @@ func TestSet(t *testing.T) {
 
 	tests := []struct {
 		pos      board.Point2
-		value    board.Value
-		expected board.Value
+		value    int
+		expected int
 	}{
 		{
 			pos:      board.Point2{0, 0},
@@ -225,7 +225,7 @@ func TestGetConflicts(t *testing.T) {
 
 	tests := []struct {
 		pos      board.Point2
-		value    board.Value
+		value    int
 		expected []board.Point2
 	}{
 		{
@@ -276,7 +276,7 @@ func TestGetPositions(t *testing.T) {
 	tBoard := getBoard()
 
 	tests := []struct {
-		value    board.Value
+		value    int
 		expected []board.Point2
 	}{
 		{
