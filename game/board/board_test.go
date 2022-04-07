@@ -30,6 +30,17 @@ func getBoard() board.Board {
 			{2, 1, 8, 5, 7, 9, 3, 6, 4},
 			{3, 4, 5, 6, 1, 8, 7, 2, 9},
 		},
+		[board.Size][board.Size]bool{
+			{false, true, false, false, true, false, true, true, false},
+			{true, true, false, true, true, false, true, true, true},
+			{true, false, true, true, true, false, false, true, false},
+			{true, false, false, false, true, false, true, true, true},
+			{false, true, true, true, false, true, false, false, true},
+			{true, false, true, false, false, false, true, true, false},
+			{false, true, false, false, true, true, true, false, true},
+			{true, true, true, true, false, true, false, false, true},
+			{true, true, false, false, false, true, true, true, false},
+		},
 	)
 }
 

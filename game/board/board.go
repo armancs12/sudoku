@@ -43,28 +43,32 @@ type Board interface {
 // New returns a new board instance
 func New(difficulty byte) Board {
 	complete := GenerateGrid()
-	incomplete := *&complete
+	incomplete := Grid{}
+	predefined := [Size][Size]bool{}
 
-	for difficulty > 0 {
+	predefinedCellsCount := Size*Size - difficulty
+
+	for predefinedCellsCount > 0 {
 		pos := randomPos()
-		if incomplete[pos.Y][pos.X] != 0 {
-			incomplete[pos.Y][pos.X] = 0
-			difficulty--
+		if incomplete[pos.Y][pos.X] == 0 {
+			incomplete[pos.Y][pos.X] = complete[pos.Y][pos.X]
+			predefined[pos.Y][pos.X] = true
+			predefinedCellsCount--
 		}
 	}
 
-	return NewCustom(incomplete, complete)
+	return NewCustom(incomplete, complete, predefined)
 }
 
 // NewCustom returns a new board instance with custom values
-func NewCustom(incomplete Grid, complete Grid) Board {
+func NewCustom(incomplete Grid, complete Grid, predefined [Size][Size]bool) Board {
 	board := &board{}
 
 	for i := 0; i < Size; i++ {
 		for j := 0; j < Size; j++ {
 			board[i][j] = cell{
 				value:      incomplete[i][j],
-				predefined: incomplete[i][j] != 0,
+				predefined: predefined[i][j],
 				correct:    complete[i][j],
 			}
 		}
