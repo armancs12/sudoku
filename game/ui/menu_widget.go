@@ -2,6 +2,8 @@ package ui
 
 import (
 	"fmt"
+
+	"github.com/serhatsdev/sudoku/game/theme"
 )
 
 // MenuWidget is an ui widget for menu representations
@@ -12,8 +14,8 @@ type MenuWidget struct {
 	HAlign   byte
 	MinWidth int
 
-	Color  ColorPair
-	Cursor ColorPair
+	Color  theme.ColorPair
+	Cursor theme.ColorPair
 
 	width int
 }

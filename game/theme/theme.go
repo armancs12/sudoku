@@ -1,68 +1,84 @@
-package game
+package theme
 
 import (
 	"encoding/json"
 	"os"
 	"path"
-
-	"github.com/serhatsdev/sudoku/game/ui"
 )
 
 type Theme struct {
-	Name        string        `json:"name"`
-	Board       ui.BoardTheme `json:"board"`
-	Menu        ui.ColorPair  `json:"menu"`
-	MenuCursor  ui.ColorPair  `json:"menu_cursor"`
-	MenuBox     ui.ColorPair  `json:"menu_box"`
-	WarningText ui.ColorPair  `json:"warning_text"`
-	WarningBox  ui.ColorPair  `json:"warning_box"`
+	Name        string     `json:"name"`
+	Board       BoardTheme `json:"board"`
+	Menu        ColorPair  `json:"menu"`
+	MenuCursor  ColorPair  `json:"menu_cursor"`
+	MenuBox     ColorPair  `json:"menu_box"`
+	WarningText ColorPair  `json:"warning_text"`
+	WarningBox  ColorPair  `json:"warning_box"`
 }
 
-func DefaultTheme() Theme {
+type ColorPair struct {
+	FG string `json:"fg"`
+	BG string `json:"bg"`
+}
+
+type BoardCellsTheme struct {
+	Normal     ColorPair `json:"normal"`
+	Predefined ColorPair `json:"predefined"`
+	Conflict   ColorPair `json:"conflict"`
+	Wrong      ColorPair `json:"wrong"`
+}
+
+type BoardTheme struct {
+	Cursor string          `json:"cursor"`
+	Border ColorPair       `json:"border"`
+	Cells  BoardCellsTheme `json:"cells"`
+}
+
+func Default() Theme {
 	return Theme{
 		Name: "Default",
-		Board: ui.BoardTheme{
+		Board: BoardTheme{
 			Cursor: "#f9da75",
-			Border: ui.ColorPair{
+			Border: ColorPair{
 				FG: "#344861",
 				BG: "#ffffff",
 			},
-			Cells: ui.BoardCellsTheme{
-				Normal: ui.ColorPair{
+			Cells: BoardCellsTheme{
+				Normal: ColorPair{
 					FG: "black",
 					BG: "#ffffff",
 				},
-				Predefined: ui.ColorPair{
+				Predefined: ColorPair{
 					FG: "#4a90e2",
 					BG: "#ffffff",
 				},
-				Conflict: ui.ColorPair{
+				Conflict: ColorPair{
 					FG: "#fb3d3f",
 					BG: "#f7cfd6",
 				},
-				Wrong: ui.ColorPair{
+				Wrong: ColorPair{
 					FG: "#fb3d3f",
 					BG: "#ffffff",
 				},
 			},
 		},
-		Menu: ui.ColorPair{
+		Menu: ColorPair{
 			FG: "#ffffff",
 			BG: "#fb3d3f",
 		},
-		MenuCursor: ui.ColorPair{
+		MenuCursor: ColorPair{
 			FG: "black",
 			BG: "#ffffff",
 		},
-		MenuBox: ui.ColorPair{
+		MenuBox: ColorPair{
 			FG: "#ffffff",
 			BG: "#fb3d3f",
 		},
-		WarningText: ui.ColorPair{
+		WarningText: ColorPair{
 			FG: "#ffffff",
 			BG: "#fb3d3f",
 		},
-		WarningBox: ui.ColorPair{
+		WarningBox: ColorPair{
 			FG: "#ffffff",
 			BG: "#fb3d3f",
 		},
@@ -78,7 +94,7 @@ func CreateThemesFolder() (string, error) {
 	return themesDir, os.MkdirAll(themesDir, os.ModePerm)
 }
 
-func LoadThemes() ([]Theme, error) {
+func Load() ([]Theme, error) {
 	themesDir, err := CreateThemesFolder()
 	if err != nil {
 		return nil, err
@@ -89,7 +105,7 @@ func LoadThemes() ([]Theme, error) {
 		return nil, err
 	}
 
-	themes := []Theme{DefaultTheme()}
+	themes := []Theme{Default()}
 	for _, file := range files {
 		if file.IsDir() {
 			continue

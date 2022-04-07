@@ -1,5 +1,7 @@
 package ui
 
+import "github.com/serhatsdev/sudoku/game/theme"
+
 // BoxWidget is an simple ui wrapper for other widgets
 type BoxWidget struct {
 	Child Widget
@@ -14,7 +16,7 @@ type BoxWidget struct {
 	PaddingRight  int
 
 	Fill  bool
-	Color ColorPair
+	Color theme.ColorPair
 }
 
 const (

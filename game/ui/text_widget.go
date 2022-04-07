@@ -3,6 +3,8 @@ package ui
 import (
 	"fmt"
 	"strings"
+
+	"github.com/serhatsdev/sudoku/game/theme"
 )
 
 // TextWidget is an ui widget for texts
@@ -12,7 +14,7 @@ type TextWidget struct {
 	AlignCenter bool
 	AlignRight  bool
 
-	Color ColorPair
+	Color theme.ColorPair
 
 	lines []string
 	width int

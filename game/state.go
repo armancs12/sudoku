@@ -2,6 +2,7 @@ package game
 
 import (
 	"github.com/serhatsdev/sudoku/game/board"
+	"github.com/serhatsdev/sudoku/game/theme"
 )
 
 // State is an interface for game states
@@ -47,7 +48,7 @@ func NewMenuState(game Game) State {
 				game.PopState()
 			}},
 			{"Themes", func() {
-				themes, err := LoadThemes()
+				themes, err := theme.Load()
 				if err != nil {
 					return
 				}
@@ -62,7 +63,7 @@ func NewMenuState(game Game) State {
 	}
 }
 
-func NewThemesMenuState(game Game, themes []Theme) State {
+func NewThemesMenuState(game Game, themes []theme.Theme) State {
 	themeOptions := []menuOption{}
 	for _, theme := range themes {
 		theme := theme

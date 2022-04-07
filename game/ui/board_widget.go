@@ -2,6 +2,7 @@ package ui
 
 import (
 	"github.com/serhatsdev/sudoku/game/board"
+	"github.com/serhatsdev/sudoku/game/theme"
 )
 
 // BoardHeight is height of BoardOutline
@@ -37,20 +38,7 @@ var boardOutline = [][]rune{
 type BoardWidget struct {
 	Board     board.Board
 	CursorPos board.Point2
-	Theme     BoardTheme
-}
-
-type BoardTheme struct {
-	Cursor string          `json:"cursor"`
-	Border ColorPair       `json:"border"`
-	Cells  BoardCellsTheme `json:"cells"`
-}
-
-type BoardCellsTheme struct {
-	Normal     ColorPair `json:"normal"`
-	Predefined ColorPair `json:"predefined"`
-	Conflict   ColorPair `json:"conflict"`
-	Wrong      ColorPair `json:"wrong"`
+	Theme     theme.BoardTheme
 }
 
 // Draw draws the board widget to the terminal
@@ -120,8 +108,8 @@ func (bw *BoardWidget) getCellRune(pos board.Point2) rune {
 	return '0' + rune(bw.Board.Get(pos))
 }
 
-func (bw *BoardWidget) getCellStyles() [board.Size][board.Size]*ColorPair {
-	styles := [board.Size][board.Size]*ColorPair{}
+func (bw *BoardWidget) getCellStyles() [board.Size][board.Size]*theme.ColorPair {
+	styles := [board.Size][board.Size]*theme.ColorPair{}
 
 	// Set conflict style
 	value := bw.Board.Get(bw.CursorPos)
@@ -150,7 +138,7 @@ func (bw *BoardWidget) getCellStyles() [board.Size][board.Size]*ColorPair {
 	}
 
 	// Set cursor style
-	styles[bw.CursorPos.Y][bw.CursorPos.X] = &ColorPair{
+	styles[bw.CursorPos.Y][bw.CursorPos.X] = &theme.ColorPair{
 		FG: styles[bw.CursorPos.Y][bw.CursorPos.X].FG,
 		BG: bw.Theme.Cursor,
 	}

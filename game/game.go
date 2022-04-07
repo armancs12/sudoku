@@ -2,6 +2,7 @@ package game
 
 import (
 	"github.com/serhatsdev/sudoku/game/board"
+	"github.com/serhatsdev/sudoku/game/theme"
 	"github.com/serhatsdev/sudoku/game/ui"
 )
 
@@ -17,9 +18,9 @@ type Game interface {
 	SetBoard(board board.Board)
 
 	// Theme returns the current theme
-	Theme() Theme
+	Theme() theme.Theme
 	// SetTheme sets current theme to the given theme
-	SetTheme(theme Theme)
+	SetTheme(theme theme.Theme)
 
 	// MinWidth returns minimum terminal width
 	// required to run the game
@@ -52,7 +53,7 @@ func NewGame(client ui.Client) (Game, error) {
 		states:    []State{},
 		minWidth:  ui.BoardWidth,
 		minHeight: ui.BoardHeight,
-		theme:     DefaultTheme(),
+		theme:     theme.Default(),
 	}
 
 	game.PushState(NewPlayState(game))
@@ -64,7 +65,7 @@ type game struct {
 	board  board.Board
 	states []State
 	client ui.Client
-	theme  Theme
+	theme  theme.Theme
 
 	minWidth, minHeight int
 }
@@ -110,11 +111,11 @@ func (game *game) Client() ui.Client {
 	return game.client
 }
 
-func (game *game) Theme() Theme {
+func (game *game) Theme() theme.Theme {
 	return game.theme
 }
 
-func (game *game) SetTheme(theme Theme) {
+func (game *game) SetTheme(theme theme.Theme) {
 	game.theme = theme
 }
 

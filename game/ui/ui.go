@@ -9,11 +9,6 @@ const (
 	VAlignEnd
 )
 
-type ColorPair struct {
-	FG string `json:"fg"`
-	BG string `json:"bg"`
-}
-
 type Client interface {
 	// Start starts the client
 	Start() error
