@@ -25,6 +25,8 @@ type Board interface {
 	// Set sets the cell value at the given position
 	Set(pos Point2, value int)
 
+	GetCorrect(pos Point2) int
+
 	// IsPredefined returns if the cell value is defined by system
 	IsPredefined(pos Point2) bool
 
@@ -93,6 +95,10 @@ func (board *board) Set(pos Point2, value int) {
 	if !board.IsPredefined(pos) {
 		board[pos.Y][pos.X].value = value
 	}
+}
+
+func (board *board) GetCorrect(pos Point2) int {
+	return board[pos.Y][pos.X].correct
 }
 
 func (board *board) IsPredefined(pos Point2) bool {
