@@ -48,7 +48,7 @@ func NewMenuState(game Game) State {
 				game.PopState()
 			}},
 			{"Themes", func() {
-				themes, err := theme.Load()
+				themes, err := theme.GetThemes()
 				if err != nil {
 					return
 				}

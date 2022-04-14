@@ -47,13 +47,18 @@ type Game interface {
 
 // NewGame returns a new game instance
 func NewGame(client ui.Client) (Game, error) {
+	themes, err := theme.GetThemes()
+	if err != nil {
+		return nil, err
+	}
+
 	game := &game{
 		board:     board.New(board.Medium),
 		client:    client,
 		states:    []State{},
 		minWidth:  ui.BoardWidth,
 		minHeight: ui.BoardHeight,
-		theme:     theme.Default(),
+		theme:     themes[0],
 	}
 
 	game.PushState(NewPlayState(game))

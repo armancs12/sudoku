@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path"
+	"strings"
 )
 
 type Theme struct {
@@ -34,9 +35,11 @@ type BoardTheme struct {
 	Cells  BoardCellsTheme `json:"cells"`
 }
 
-func Default() Theme {
-	return Theme{
-		Name: "Default",
+var loadedThemes []Theme
+
+func getDefaultThemes() map[string]Theme {
+	defaultLight := Theme{
+		Name: "Default Light",
 		Board: BoardTheme{
 			Cursor: "#f9da75",
 			Border: ColorPair{
@@ -83,41 +86,87 @@ func Default() Theme {
 			BG: "#fb3d3f",
 		},
 	}
+
+	return map[string]Theme{
+		"default_light.json": defaultLight,
+	}
 }
 
-func CreateThemesFolder() (string, error) {
-	themesDir, err := getThemesFolder()
+func getThemesDirectory() (string, error) {
+	configDir, err := os.UserConfigDir()
 	if err != nil {
 		return "", err
 	}
 
-	return themesDir, os.MkdirAll(themesDir, os.ModePerm)
+	return path.Join(configDir, "sudoku", "themes"), nil
 }
 
-func Load() ([]Theme, error) {
-	themesDir, err := CreateThemesFolder()
+func isThemesDirExist() (bool, error) {
+	themesDir, err := getThemesDirectory()
 	if err != nil {
-		return nil, err
+		return false, err
 	}
 
-	files, err := os.ReadDir(themesDir)
+	_, err = os.Stat(themesDir)
 	if err != nil {
-		return nil, err
-	}
-
-	themes := []Theme{Default()}
-	for _, file := range files {
-		if file.IsDir() {
-			continue
+		if os.IsNotExist(err) {
+			err = nil
 		}
 
-		body, err := os.ReadFile(path.Join(themesDir, file.Name()))
+		return false, err
+	}
+
+	return true, nil
+}
+
+func getFileType(filename string) string {
+	parts := strings.Split(filename, ".")
+	return parts[len(parts)-1:][0]
+}
+
+func getThemeJsonFiles() ([]string, error) {
+	themesDir, err := getThemesDirectory()
+	if err != nil {
+		return nil, err
+	}
+
+	entries, err := os.ReadDir(themesDir)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return []string{}, nil
+		}
+
+		return nil, err
+	}
+
+	jsonFiles := []string{}
+	for _, entry := range entries {
+		if !entry.IsDir() && getFileType(entry.Name()) == "json" {
+			jsonFiles = append(jsonFiles, path.Join(themesDir, entry.Name()))
+		}
+	}
+
+	return jsonFiles, nil
+}
+
+func loadThemes() ([]Theme, error) {
+	jsonFiles, err := getThemeJsonFiles()
+	if err != nil {
+		return nil, err
+	}
+	themes := []Theme{}
+
+	for _, file := range jsonFiles {
+		data, err := os.ReadFile(file)
 		if err != nil {
-			continue
+			return nil, err
 		}
 
 		theme := Theme{}
-		json.Unmarshal(body, &theme)
+		err = json.Unmarshal([]byte(data), &theme)
+		if err != nil {
+			return nil, err
+		}
 
 		themes = append(themes, theme)
 	}
@@ -125,11 +174,54 @@ func Load() ([]Theme, error) {
 	return themes, nil
 }
 
-func getThemesFolder() (string, error) {
-	configDir, err := os.UserConfigDir()
+func createDefaultThemes() ([]Theme, error) {
+	themesDir, err := getThemesDirectory()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return path.Join(configDir, "sudoku", "themes"), nil
+	err = os.MkdirAll(themesDir, os.ModePerm)
+	if err != nil {
+		return nil, err
+	}
+
+	themesWithFilename := getDefaultThemes()
+	themes := []Theme{}
+
+	for filename, theme := range themesWithFilename {
+		data, err := json.Marshal(theme)
+		if err != nil {
+			return nil, err
+		}
+
+		err = os.WriteFile(path.Join(themesDir, filename), data, os.ModePerm)
+		if err != nil {
+			return nil, err
+		}
+
+		themes = append(themes, theme)
+	}
+
+	return themes, nil
+}
+
+func GetThemes() ([]Theme, error) {
+	if loadedThemes != nil && len(loadedThemes) > 0 {
+		return loadedThemes, nil
+	}
+
+	themes, err := loadThemes()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(themes) == 0 {
+		themes, err = createDefaultThemes()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	loadedThemes = themes
+	return themes, nil
 }
