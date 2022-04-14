@@ -6,7 +6,7 @@ import (
 	"github.com/serhatsdev/sudoku/game/ui"
 )
 
-var Version = "0.1.0"
+var Version = "0.2.0"
 
 type Game interface {
 	// Start starts the game
