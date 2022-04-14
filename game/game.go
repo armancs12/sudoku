@@ -47,25 +47,38 @@ type Game interface {
 	PopState() State
 }
 
+func tryToLoadGame(game *game) bool {
+	savedata, err := LoadSavedGame()
+	if err != nil {
+		return false
+	}
+
+	game.board = savedata.Board
+	game.theme = savedata.Theme
+	return true
+}
+
 // NewGame returns a new game instance
 func NewGame(client ui.Client) (Game, error) {
-	themes, err := theme.GetThemes()
-	if err != nil {
-		return nil, err
+	game := game{}
+	game.client = client
+	game.states = []State{}
+	game.minWidth = ui.BoardWidth
+	game.minHeight = ui.BoardHeight
+
+	isSuccessful := tryToLoadGame(&game)
+	if !isSuccessful {
+		themes, err := theme.GetThemes()
+		if err != nil {
+			return nil, err
+		}
+
+		game.theme = themes[0]
+		game.board = board.New(board.Medium)
 	}
 
-	game := &game{
-		board:     board.New(board.Medium),
-		client:    client,
-		states:    []State{},
-		minWidth:  ui.BoardWidth,
-		minHeight: ui.BoardHeight,
-		theme:     themes[0],
-	}
-
-	game.PushState(NewPlayState(game))
-
-	return game, nil
+	game.PushState(NewPlayState(&game))
+	return &game, nil
 }
 
 type game struct {
@@ -103,6 +116,11 @@ func (game *game) Start() error {
 }
 
 func (game *game) Exit() {
+	SaveGame(SaveData{
+		Board: game.board,
+		Theme: game.theme,
+	})
+
 	game.client.Stop()
 }
 
