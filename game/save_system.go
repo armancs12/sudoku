@@ -37,11 +37,7 @@ func boolToInt(value bool) int {
 }
 
 func intToBool(value int) bool {
-	if value > 0 {
-		return true
-	}
-
-	return false
+	return value > 0
 }
 
 func getBoardData(b board.Board) string {
@@ -143,8 +139,12 @@ func LoadSavedGame() (SaveData, error) {
 		return SaveData{}, err
 	}
 
-	savedatajson := SaveDataJSON{}
 	file, err := os.ReadFile(saveFile)
+	if err != nil {
+		return SaveData{}, err
+	}
+
+	savedatajson := SaveDataJSON{}
 	json.Unmarshal(file, &savedatajson)
 
 	themes, err := theme.GetThemes()
